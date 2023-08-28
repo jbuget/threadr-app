@@ -9,7 +9,9 @@
             <div class="actions">
                 <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
                 <div class="message-index"><span>#{{ index + 1 }}</span></div>
+                <div class="message-length">{{ message.body.length }}/500</div>
                 <div role="button" tabindex="0" title="Add" @click="addMessageBelow(index + 1)"><span>+</span></div>
+                <div role="button" tabindex="0" title="Remove" @click="removeMessage(index)"><span>-</span></div>
             </div>
         </div>
     </div>
@@ -17,23 +19,20 @@
 
 <script setup lang="ts">
 const messages = reactive([{
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    files: []
-}, {
-    body: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    files: []
-}, {
-    body: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-    files: []
-}, {
-    body: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    body: '',
     files: []
 }])
 
 function addMessageBelow(index: number) {
-    console.log('add message on index ' + index)
     const newMessage = { body: '', files: [] }
     messages.splice(index, 0, newMessage);
+}
+
+function removeMessage(index: number) {
+    messages.splice(index, 1);
+    if (messages.length === 0) {
+        addMessageBelow(0)
+    }
 }
 </script>
 
