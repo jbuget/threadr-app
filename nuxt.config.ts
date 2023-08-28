@@ -12,6 +12,5 @@ export default defineNuxtConfig({
       Roboto: true,
       Mulish: true
     }
-  }
-
+  },
 })
