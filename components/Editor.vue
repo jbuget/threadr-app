@@ -36,7 +36,8 @@ function removeMessage(index: number) {
 }
 
 async function publishThread() {
-    await $fetch('/api/threads', { method: 'post', body: { messages } })
+    const nonEmptyMessages = messages.filter((message) => message.body.trim().length > 0)
+    await $fetch('/api/threads', { method: 'post', body: { messages: nonEmptyMessages } })
 }
 </script>
 
