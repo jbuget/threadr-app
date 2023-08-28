@@ -1,6 +1,6 @@
 <template>
     <div class="publish">
-        <div role="button" tabindex="0"><span>Post</span></div>
+        <div role="button" tabindex="0" @click="publishThread()"><span>Post</span></div>
     </div>
 
     <div class="messages" v-for="(message, index) in messages">
@@ -33,6 +33,10 @@ function removeMessage(index: number) {
     if (messages.length === 0) {
         addMessageBelow(0)
     }
+}
+
+async function publishThread() {
+    await $fetch('/api/threads', { method: 'post', body: { messages } })
 }
 </script>
 
