@@ -1,22 +1,8 @@
-<template>
-    <div class="messages">
-        <div class="message" v-for="(message, index) in messages">
-            <textarea v-model="message.body" placeholder="What's up?" rows="4"></textarea>
-            <div class="actions">
-                <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
-                <div class="message-index"><span>{{ index + 1 }}/{{ messages.length }}</span></div>
-                <div class="message-length">{{ message.body.length }}/280</div>
-                <div class="add-message" role="button" tabindex="0" title="Add message" @keyup.enter="addMessageBelow(index + 1)" @click="addMessageBelow(index + 1)"><span>+</span></div>
-                <div class="remove-message" role="button" tabindex="0" title="Remove message" @keyup.enter="removeMessage(index)" @click="removeMessage(index)"><span>-</span></div>
-            </div>
-        </div>
-        <div class="publish">
-            <div role="button" tabindex="0" @click="publishThread()"><span>Post</span></div>
-        </div>
-    </div>
-</template>
-
 <script setup lang="ts">
+import { useToast } from "primevue/usetoast";
+
+const toast = useToast();
+
 const messages = reactive([{
     body: '',
     files: []
@@ -36,14 +22,37 @@ function removeMessage(index: number) {
 
 async function publishThread() {
     const nonEmptyMessages = messages.filter((message) => message.body.trim().length > 0)
-    await $fetch('/api/threads', { method: 'post', body: { messages: nonEmptyMessages } })
+    //await $fetch('/api/threads', { method: 'post', body: { messages: nonEmptyMessages } })
+    toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
 }
 </script>
 
+<template>
+    <div class="editor">
+        <Toast />
+        <div class="messages">
+            <div class="message" v-for="(message, index) in messages">
+                <Textarea v-model="message.body" placeholder="What's up?" rows="4" autoResize></Textarea>
+                <div class="actions">
+                    <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
+                    <div class="message-index"><span>{{ index + 1 }}/{{ messages.length }}</span></div>
+                    <div class="message-length">{{ message.body.length }}/280</div>
+                    <div class="add-message" role="button" tabindex="0" title="Add message"
+                        @keyup.enter="addMessageBelow(index + 1)" @click="addMessageBelow(index + 1)"><span>+</span></div>
+                    <div class="remove-message" role="button" tabindex="0" title="Remove message"
+                        @keyup.enter="removeMessage(index)" @click="removeMessage(index)"><span>-</span></div>
+                </div>
+            </div>
+            <Divider />
+            <div class="publish">
+                <Button label="Publish" icon="pi pi-send" severity="success" @click="publishThread" />
+            </div>
+        </div>
+    </div>
+</template>
+
 <style>
 .publish {
-    border-top: 1px solid lightsteelblue;
-    padding: 20px 0;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
@@ -65,20 +74,6 @@ async function publishThread() {
 .publish div[role="button"]:hover {
     color: white;
     background-color: rgb(0, 186, 124);
-}
-
-textarea {
-    resize: none;
-    border: 2px solid #EFEFEF;
-    border-radius: 10px;
-    padding: 15px;
-}
-
-textarea:active,
-textarea:focus {
-    outline: none !important;
-    border: 2px solid lightsteelblue;
-    ;
 }
 
 .actions {
@@ -141,4 +136,5 @@ textarea:focus {
 
 .message-index {
     color: lightsteelblue;
-}</style>
+}
+</style>

@@ -7,7 +7,12 @@ export default defineNuxtConfig({
   },
   css: [
     '@/assets/css/main.css',
+    '@/assets/scss/main.scss',
+    'primevue/resources/themes/lara-light-blue/theme.css'
   ],
+  build: {
+    transpile: ["primevue"]
+  },
   modules: ['@nuxtjs/google-fonts'],
   googleFonts: {
     families: {
