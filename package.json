@@ -14,5 +14,8 @@
     "@nuxtjs/google-fonts": "^3.0.2",
     "masto": "^6.2.0",
     "nuxt": "^3.7.0"
+  },
+  "dependencies": {
+    "twitter-api-v2": "^1.15.1"
   }
 }

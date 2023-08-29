@@ -1,14 +1,19 @@
 import { createRestAPIClient, mastodon } from 'masto'
 import AtProtocole from "@atproto/api";
 import { ReplyRef } from '@atproto/api/dist/client/types/app/bsky/feed/post';
+import { TwitterApi } from 'twitter-api-v2';
 
 function getEnvString(key: string): string {
     return process.env[key] || 'undefined'
 }
 
-let mastodonClient: mastodon.rest.Client
+// Social network API clients
 
 let blueskyClient: AtProtocole.BskyAgent
+
+let mastodonClient: mastodon.rest.Client
+
+let twitterClient: TwitterApi;
 
 async function connectClients(): Promise<void> {
     if (!blueskyClient) {
@@ -29,7 +34,19 @@ async function connectClients(): Promise<void> {
         })
         console.log('Connection to Mastodon acquired.')
     }
+    if (!twitterClient) {
+        console.log('Connect to Twitter…')
+        twitterClient = new TwitterApi({
+            appKey: getEnvString('TWITTER_CONSUMER_KEY'),
+            appSecret: getEnvString('TWITTER_CONSUMER_SECRET'),
+            accessToken: getEnvString('TWITTER_ACCESS_TOKEN'),
+            accessSecret: getEnvString('TWITTER_ACCESS_SECRET')
+        });
+        console.log('Connection to Twitter acquired.')
+    }
 }
+
+// Publication on Mastodon
 
 async function postMessageOnMastodon(status: string, inReplyToId: string | null): Promise<mastodon.v1.Status> {
     return mastodonClient.v1.statuses.create({
@@ -50,6 +67,8 @@ async function postMessagesOnMastodon(messages: Message[]): Promise<void> {
     }
 
 }
+
+// Publication on Bluesky
 
 interface RecordRef {
     uri: string;
@@ -89,15 +108,25 @@ async function postMessagesOnBluesky(messages: Message[]): Promise<void> {
     }
 }
 
+// Publication on Twitter
+
+async function postMessagesOnTwitter(messages: Message[]): Promise<void> {
+    const tweets = messages.map(message => message.body)
+    await twitterClient.v2.tweetThread(tweets);
+}
 
 async function postMessages(messages: Message[]): Promise<void> {
+    console.log('Publish messages on Bluesky')
+    await postMessagesOnBluesky(messages)
+    console.log('Messages published on Bluesky.')
+
     console.log('Publish messages on Mastodon…')
     await postMessagesOnMastodon(messages)
     console.log('Messages published on Mastodon.')
 
-    console.log('Publish messages on Bluesky')
-    await postMessagesOnBluesky(messages)
-    console.log('Messages published on Bluesky.')
+    console.log('Publish messages on Twitter…')
+    await postMessagesOnTwitter(messages)
+    console.log('Messages published on Twitter.')
 }
 
 interface Message {
