@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "threader",
   "private": true,
   "scripts": {
     "build": "nuxt build",

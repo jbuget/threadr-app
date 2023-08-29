@@ -1,8 +1,4 @@
 <template>
-    <div class="publish">
-        <div role="button" tabindex="0" @click="publishThread()"><span>Post</span></div>
-    </div>
-
     <div class="messages" v-for="(message, index) in messages">
         <div class="message">
             <textarea v-model="message.body" placeholder="What's up?" cols="64"></textarea>
@@ -10,10 +6,13 @@
                 <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
                 <div class="message-index"><span>#{{ index + 1 }}</span></div>
                 <div class="message-length">{{ message.body.length }}/500</div>
-                <div role="button" tabindex="0" title="Add" @click="addMessageBelow(index + 1)"><span>+</span></div>
-                <div role="button" tabindex="0" title="Remove" @click="removeMessage(index)"><span>-</span></div>
+                <div role="button" tabindex="0" title="Add" @keyup.enter="addMessageBelow(index + 1)" @click="addMessageBelow(index + 1)"><span>+</span></div>
+                <div role="button" tabindex="0" title="Remove" @keyup.enter="removeMessage(index)" @click="removeMessage(index)"><span>-</span></div>
             </div>
         </div>
+    </div>
+    <div class="publish">
+        <div role="button" tabindex="0" @click="publishThread()"><span>Post</span></div>
     </div>
 </template>
 
@@ -42,8 +41,13 @@ async function publishThread() {
 </script>
 
 <style>
+
+.publish {
+    border-top: 1px solid lightsteelblue;
+    padding: 20px 0;
+}
 .publish div[role="button"] {
-    border: 1px solid grey;
+    border: 1px solid lightsteelblue;
     border-radius: 10px;
     cursor: pointer;
     display: inline-block;
@@ -52,7 +56,9 @@ async function publishThread() {
 
 textarea {
     resize: none;
-    border: none;
+    border: 1px solid lightsteelblue;
+    border-radius: 5px;
+    padding: 8px;
 }
 
 textarea:focus {
@@ -65,14 +71,18 @@ textarea:focus {
 }
 
 .actions div {
-    margin: 0 10px;
+    margin-right: 8px;
     padding: 5px 10px;
 }
 
 .actions div[role="button"] {
     cursor: pointer;
-    border: 1px solid grey;
+    border: 1px solid lightsteelblue;
     border-radius: 10px;
+}
+
+.messages {
+    margin: 40px auto;
 }
 
 .message {
@@ -80,7 +90,6 @@ textarea:focus {
 }
 
 .message-index {
-    font-size: 1.25rem;
-    color: grey;
+    color: lightsteelblue;
 }
 </style>
