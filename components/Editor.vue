@@ -1,18 +1,18 @@
 <template>
-    <div class="messages" v-for="(message, index) in messages">
-        <div class="message">
-            <textarea v-model="message.body" placeholder="What's up?" cols="64"></textarea>
+    <div class="messages">
+        <div class="message" v-for="(message, index) in messages">
+            <textarea v-model="message.body" placeholder="What's up?" rows="4"></textarea>
             <div class="actions">
                 <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
-                <div class="message-index"><span>#{{ index + 1 }}</span></div>
-                <div class="message-length">{{ message.body.length }}/500</div>
-                <div role="button" tabindex="0" title="Add" @keyup.enter="addMessageBelow(index + 1)" @click="addMessageBelow(index + 1)"><span>+</span></div>
-                <div role="button" tabindex="0" title="Remove" @keyup.enter="removeMessage(index)" @click="removeMessage(index)"><span>-</span></div>
+                <div class="message-index"><span>{{ index + 1 }}/{{ messages.length }}</span></div>
+                <div class="message-length">{{ message.body.length }}/280</div>
+                <div class="add-message" role="button" tabindex="0" title="Add message" @keyup.enter="addMessageBelow(index + 1)" @click="addMessageBelow(index + 1)"><span>+</span></div>
+                <div class="remove-message" role="button" tabindex="0" title="Remove message" @keyup.enter="removeMessage(index)" @click="removeMessage(index)"><span>-</span></div>
             </div>
         </div>
-    </div>
-    <div class="publish">
-        <div role="button" tabindex="0" @click="publishThread()"><span>Post</span></div>
+        <div class="publish">
+            <div role="button" tabindex="0" @click="publishThread()"><span>Post</span></div>
+        </div>
     </div>
 </template>
 
@@ -41,33 +41,52 @@ async function publishThread() {
 </script>
 
 <style>
-
 .publish {
     border-top: 1px solid lightsteelblue;
     padding: 20px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
 }
+
 .publish div[role="button"] {
     border: 1px solid lightsteelblue;
-    border-radius: 10px;
+    border-radius: 5px;
     cursor: pointer;
     display: inline-block;
-    padding: 5px 10px;
+    padding: 10px 30px;
+    color: rgb(0, 186, 124);
+    background-color: rgb(0, 186, 124, 0.1);
+    font-weight: 600;
+}
+
+.publish div[role="button"]:active,
+.publish div[role="button"]:focus,
+.publish div[role="button"]:hover {
+    color: white;
+    background-color: rgb(0, 186, 124);
 }
 
 textarea {
     resize: none;
-    border: 1px solid lightsteelblue;
-    border-radius: 5px;
-    padding: 8px;
+    border: 2px solid #EFEFEF;
+    border-radius: 10px;
+    padding: 15px;
 }
 
+textarea:active,
 textarea:focus {
     outline: none !important;
+    border: 2px solid lightsteelblue;
+    ;
 }
 
 .actions {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px 0;
 }
 
 .actions div {
@@ -78,7 +97,36 @@ textarea:focus {
 .actions div[role="button"] {
     cursor: pointer;
     border: 1px solid lightsteelblue;
-    border-radius: 10px;
+    border-radius: 50%;
+    height: 2rem;
+    width: 2rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.actions div[role="button"].add-message {
+    color: rgb(29, 155, 240);
+    background-color: transparent;
+}
+
+.actions div[role="button"].add-message:active,
+.actions div[role="button"].add-message:focus,
+.actions div[role="button"].add-message:hover {
+    background-color: rgb(29, 155, 240, 0.1);
+}
+
+.actions div[role="button"].remove-message {
+    color: rgb(249, 24, 128);
+    background-color: transparent;
+}
+
+.actions div[role="button"].remove-message:active,
+.actions div[role="button"].remove-message:focus,
+.actions div[role="button"].remove-message:hover {
+    background-color: rgb(249, 24, 128, 0.1)
 }
 
 .messages {
@@ -86,10 +134,11 @@ textarea:focus {
 }
 
 .message {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .message-index {
     color: lightsteelblue;
-}
-</style>
+}</style>
