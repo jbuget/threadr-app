@@ -36,11 +36,18 @@ async function publishThread() {
                 <div class="actions">
                     <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
                     <div class="message-index"><span>{{ index + 1 }}/{{ messages.length }}</span></div>
+                    <div class="add-attachments">
+                        <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true" />
+                    </div>
                     <div class="message-length">{{ message.body.length }}/280</div>
                     <div class="add-message" role="button" tabindex="0" title="Add message"
-                        @keyup.enter="addMessageBelow(index + 1)" @click="addMessageBelow(index + 1)"><span>+</span></div>
+                        @keyup.enter="addMessageBelow(index + 1)" @click="addMessageBelow(index + 1)">
+                        <span>+</span>
+                    </div>
                     <div class="remove-message" role="button" tabindex="0" title="Remove message"
-                        @keyup.enter="removeMessage(index)" @click="removeMessage(index)"><span>-</span></div>
+                        @keyup.enter="removeMessage(index)" @click="removeMessage(index)">
+                        <span>-</span>
+                    </div>
                 </div>
             </div>
             <Divider />
