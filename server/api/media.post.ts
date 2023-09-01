@@ -30,7 +30,9 @@ function parseMultipartNodeRequest(req: IncomingMessage) {
             }
 
             /*
-            On préfixe le nom de fichier par uuid() par mesure de sécurité afin d'éviter le scrapping ou le listing par brute force
+            On préfixe le nom de fichier par uuid() :
+            - par mesure de sécurité afin d'éviter le scrapping ou le listing par brute force
+            - afin de pouvoir uploader plusieurs fichiers différents portant le même nom
             */
             const fileObjectKey = `${process.env.MINIO_MEDIA_PATH as string}/${uuid()}-${file.originalFilename}`
 
