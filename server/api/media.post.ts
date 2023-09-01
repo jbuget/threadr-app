@@ -1,59 +1,82 @@
-import { Client } from 'minio'
+import formidable, { File } from 'formidable'
+import { v4 as uuid } from 'uuid'
+import { PassThrough, Writable } from 'node:stream'
+import { S3Client } from '@aws-sdk/client-s3'
+import { Upload } from '@aws-sdk/lib-storage'
+import { IncomingMessage } from 'http'
 
-const minioClient = new Client({
-    endPoint: process.env.MINIO_ENDPOINT_URL as string,
-    port: parseInt(process.env.MINIO_ENDPOINT_PORT as string),
-    useSSL: (process.env.MINIO_USE_SSL as string) === 'true',
-    accessKey: process.env.MINIO_ACCESS_KEY as string,
-    secretKey: process.env.MINIO_SECRET_KEY as string,
+const s3Client = new S3Client({
+    endpoint: process.env.MINIO_URL as string,
+    region: process.env.MINIO_REGION as string,
+    credentials: {
+        accessKeyId: process.env.MINIO_ACCESS_KEY as string,
+        secretAccessKey: process.env.MINIO_SECRET_KEY as string
+    },
+    /* 
+    Required with MinIO in order to allow URL such as `minio.example.org/bucket_name` 
+    instead of default generated URL `bucket_name.mino.example.org` 
+    */
+    forcePathStyle: true
 })
 
-export default defineEventHandler(async (event: any) => {
-    const nodeRequestObject = event.node.req
-//    const formData = await readMultipartFormData(event)
-//    console.log(formData)
-
-    const headers = getRequestHeaders(event)
-
-    const body = await doSomethingWithNodeRequest(event.node.req);
-    console.log(body)
-
-    return { ok: true }
-});
-
-/**
- * @param {import('http').IncomingMessage} req
- */
-function doSomethingWithNodeRequest(req: any) {
+function parseMultipartNodeRequest(req: IncomingMessage) {
     return new Promise((resolve, reject) => {
-        /** @type {any[]} */
-        const chunks: any = [];
-        req.on('data', (data: any) => {
-            chunks.push(data);
-        });
-        req.on('end', async () => {
-            const payload = Buffer.concat(chunks).toString()
-            var metaData = {
-                'Content-Type': 'application/octet-stream',
-                'X-Amz-Meta-Testing': 1234,
-                example: 5678,
-            }
-            // uploading object with string data on Body
-            const bucketEndpointUrl = process.env.MINIO_ENDPOINT_URL as string
-            const bucketName = process.env.MINIO_BUCKET_NAME as string
-            const fileObjectKey = "test_file.png";
+        const s3Uploads: Promise<any>[] = [];
 
-            console.log(`Uploading file ${fileObjectKey} to bucket ${bucketName} on MinIO instance at ${bucketEndpointUrl}...`)
-
-            try {
-                await minioClient.putObject(bucketName, `media/${fileObjectKey}`, payload)
-                console.log(`Successfully uploaded ${bucketName}/${fileObjectKey}!`);
-                resolve(payload);
-            } catch (err) {
-                if (err) return console.log(err)
+        function fileWriteStreamHandler(file?: any) : Writable {
+            const body = new PassThrough();
+            if (!file) {
+                return body
             }
+
+            /*
+            On préfixe le nom de fichier par uuid() par mesure de sécurité afin d'éviter le scrapping ou le listing par brute force
+            */
+            const fileObjectKey = `${process.env.MINIO_MEDIA_PATH as string}/${uuid()}-${file.originalFilename}`
+
+            const upload = new Upload({
+                client: s3Client,
+                params: {
+                    Bucket: process.env.MINIO_BUCKET_NAME as string,
+                    Key: fileObjectKey,
+                    ContentType: file.mimetype,
+                    Body: body,
+                },
+            });
+            const uploadRequest = upload.done().then((response:any) => {
+                file.location = response.Location;
+            });
+            s3Uploads.push(uploadRequest);
+            return body;
+        }
+        const form = formidable({
+            multiples: true,
+            fileWriteStreamHandler: fileWriteStreamHandler,
         });
-        req.on('error', reject);
+        form.parse(req, (error, fields, files) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            Promise.all(s3Uploads)
+                .then(() => {
+                    resolve({ ...fields, ...files });
+                })
+                .catch(reject);
+        });
     });
-
 }
+
+export default defineEventHandler(async (event: any) => {
+    let body;
+    const headers = getRequestHeaders(event);
+
+    if (headers['content-type']?.includes('multipart/form-data')) {
+        body = await parseMultipartNodeRequest(event.node.req);
+    } else {
+        body = await readBody(event);
+    }
+    console.log(body);
+
+    return { ok: true };
+});
