@@ -1,11 +1,21 @@
 <script setup lang="ts">
+import { FileUploadBeforeUploadEvent, FileUploadRemoveEvent, FileUploadRemoveUploadedFile, FileUploadSelectEvent, FileUploadUploadEvent } from "primevue/fileupload";
 import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
 
 class Attachment {
-    location!: string;
-    size!: number;
+    filename!: string
+    location!: string
+    size!: number
+    mimetype!: string
+
+    constructor(filename: string, location: string, mimetype: string, size: number) {
+        this.filename = filename
+        this.location = location
+        this.mimetype = mimetype
+        this.size = size
+    }
 }
 
 class Message {
@@ -18,17 +28,44 @@ class Message {
     }
 }
 
-defineProps<{
-  index: number,
-  message: Message
+const props = defineProps<{
+    index: number,
+    message: Message
 }>()
 
 defineEmits(['add-message-below', 'remove-message'])
 
-function onAdvancedUpload(event?: any) {
-    console.log(event)
+function onUploadComplete(event: FileUploadUploadEvent) {
+    const { files } = JSON.parse(event.xhr.response)
+
+    let attachments = files.map((file: any) => new Attachment(file.originalFilename, file.location, file.mimetype, file.size));
+    props.message.files.push(...attachments)
+
     toast.add({ severity: 'success', summary: 'Success', detail: `File(s) uploaded`, life: 3000 });
-};
+}
+
+function onUploadedFileRemoved(event: FileUploadRemoveUploadedFile) {
+    const fileIndex = props.message.files.findIndex(file => file.filename === event.file.name)
+    props.message.files.splice(fileIndex, 1)
+}
+
+/* function onFilesSelected(event: FileUploadSelectEvent) {
+    let selectedFileIndexesToRemove: number[] = [] // by reverse order
+    const selectedFiles = event.files
+    for (const selectedFile of selectedFiles) {
+        const alreadyUploadedFileIndex = props.message.files.findIndex((messageFile: any) => {
+            return (messageFile.filename === selectedFile.name) && (messageFile.size === selectedFile.size)
+        })
+        if (alreadyUploadedFileIndex >= 0) {
+            selectedFileIndexesToRemove.unshift(alreadyUploadedFileIndex)
+        }
+    }
+    console.log(selectedFileIndexesToRemove.length)
+    selectedFileIndexesToRemove.forEach((index) => {
+        event.files.splice(index, 1)
+    });
+}
+ */
 </script>
 
 <template>
@@ -45,7 +82,8 @@ function onAdvancedUpload(event?: any) {
                 <!-- cf. https://docs.joinmastodon.org/user/posting/#media -->
                 <FileUpload mode="advanced" name="attachments" url="/api/media" accept="image/*,video/*" :multiple="true"
                     :fileLimit="4" :maxFileSize="8000000" chooseLabel="Add media…" :showCancelButton="false"
-                    :show-upload-button="false" :unstyled="false" :auto="true" @upload="onAdvancedUpload($event)">
+                    :show-upload-button="false" :unstyled="false" :auto="true" @upload="onUploadComplete($event)"
+                    @removeUploadedFile="onUploadedFileRemoved($event)">
                     <template #empty>
                         <p>Drag and drop files to here to upload.</p>
                     </template>
@@ -149,16 +187,13 @@ function onAdvancedUpload(event?: any) {
     flex-direction: column;
 }
 
-.message-text {
+.message-text {}
 
-}
-.message-text > textarea {
+.message-text>textarea {
     width: 100%;
 }
 
-.message-attachments {
-
-}
+.message-attachments {}
 
 .message-index {
     color: lightsteelblue;

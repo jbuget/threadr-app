@@ -144,7 +144,7 @@ export default defineEventHandler(async (event) => {
     console.log('Publish thread…')
     console.log(body)
     await connectClients()
-    await postMessages(body.messages)
+    //await postMessages(body.messages)
     console.log('Thread published 🎉')
     return { body }
 })

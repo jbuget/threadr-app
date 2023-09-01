@@ -8,28 +8,24 @@ const messages = reactive([{
     files: []
 }])
 
-function addMessageBelow(index: number) {
+function addMessageBelow(index: number): void {
     const newMessage = { text: '', files: [] }
     messages.splice(index, 0, newMessage);
 }
 
-function removeMessage(index: number) {
+function removeMessage(index: number): void {
     messages.splice(index, 1);
     if (messages.length === 0) {
         addMessageBelow(0)
     }
 }
 
-async function publishThread() {
-    const nonEmptyMessages = messages.filter((message) => message.text.trim().length > 0)
-    //await $fetch('/api/threads', { method: 'post', body: { messages: nonEmptyMessages } })
+async function publishThread(): Promise<void> {
+    const nonEmptyMessages = messages.filter((message) => message.text.trim().length > 0 && message.files.length > 0)
+    await $fetch('/api/threads', { method: 'post', body: { messages: nonEmptyMessages } })
     toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
 }
 
-function onAdvancedUpload(event?: any) {
-    console.log(event)
-    toast.add({ severity: 'success', summary: 'Success', detail: `File(s) uploaded`, life: 3000 });
-};
 </script>
 
 <template>
@@ -37,7 +33,7 @@ function onAdvancedUpload(event?: any) {
         <Toast />
         <div class="messages">
             <div class="message" v-for="(message, index) in messages">
-                <Message :index=index :message=message @add-message-below="addMessageBelow(index)" @remove-message="removeMessage(index)"/>
+                <Message :index=index :message=message @addMessageBelow="addMessageBelow(index + 1)" @removeMessage="removeMessage(index)"/>
             </div>
             <Divider />
             <div class="publish">
