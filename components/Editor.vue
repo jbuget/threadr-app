@@ -25,6 +25,11 @@ async function publishThread() {
     //await $fetch('/api/threads', { method: 'post', body: { messages: nonEmptyMessages } })
     toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
 }
+
+function onAdvancedUpload(event?: any) {
+    console.log(event)
+    toast.add({ severity: 'success', summary: 'Success', detail: `File(s) uploaded`, life: 3000 });
+};
 </script>
 
 <template>
@@ -39,7 +44,11 @@ async function publishThread() {
                     <div class="add-attachments">
                         <!-- Max file size: ~8Mb, according to Mastodon max size --->
                         <!-- cf. https://docs.joinmastodon.org/user/posting/#media -->
-                        <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true" :maxFileSize="8000000" :auto="true" />
+                        <FileUpload mode="advanced" name="attachments" url="/api/media" accept="image/*" :multiple="true" :fileLimit=4 :maxFileSize="8000000" @upload="onAdvancedUpload($event)">
+                            <template #empty>
+                                <p>Drag and drop files to here to upload.</p>
+                            </template>
+                        </FileUpload>
                     </div>
                     <div class="message-length">{{ message.body.length }}/280</div>
                     <div class="add-message" role="button" tabindex="0" title="Add message"
