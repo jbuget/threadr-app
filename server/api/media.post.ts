@@ -4,6 +4,7 @@ import { PassThrough, Writable } from 'node:stream'
 import { S3Client } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
 import { IncomingMessage } from 'http'
+import VolatileFile from 'formidable/VolatileFile'
 
 const s3Client = new S3Client({
     endpoint: process.env.MINIO_URL as string,
@@ -46,7 +47,8 @@ function parseMultipartNodeRequest(req: IncomingMessage) {
                 },
             });
             const uploadRequest = upload.done().then((response:any) => {
-                file.location = response.Location;
+                file.objectKey = fileObjectKey
+                file.location = response.Location
             });
             s3Uploads.push(uploadRequest);
             return body;
@@ -61,8 +63,10 @@ function parseMultipartNodeRequest(req: IncomingMessage) {
                 return;
             }
             Promise.all(s3Uploads)
-                .then(() => {
-                    resolve({ ...fields, ...files });
+                .then((data: any) => {
+                    console.log(data)
+                    const response = { ...fields, ...files }
+                    resolve(response);
                 })
                 .catch(reject);
         });
@@ -78,7 +82,20 @@ export default defineEventHandler(async (event: any) => {
     } else {
         body = await readBody(event);
     }
-    console.log(body);
 
-    return { ok: true };
+    /* 
+    cf. ~/node_modules/@types/formidable/index.d.ts
+    default serialized fields: "size" | "filepath" | "originalFilename" | "mimetype" | "hash" | "newFilename" 
+    */
+    const responseData = body.attachments.map((file:any) => {
+        return {
+            location: file.location,
+            size: file.size,
+            mimetype: file.mimetype,
+            newFilename: file.fileObjectKey,
+            originalFilename: file.originalFilename
+        }
+    })
+
+    return { files: responseData };
 });
