@@ -1,7 +1,7 @@
 import { createRestAPIClient, mastodon } from 'masto'
 import AtProtocole from "@atproto/api";
 import { ReplyRef } from '@atproto/api/dist/client/types/app/bsky/feed/post';
-import { TwitterApi } from 'twitter-api-v2';
+import { SendTweetV2Params, TweetV2PostTweetResult, TwitterApi } from 'twitter-api-v2';
 
 function getEnvString(key: string): string {
     return process.env[key] || 'undefined'
@@ -96,17 +96,17 @@ async function postMessageOnBluesky(message: Message, reply: ReplyRef | null): P
             }
             for (const file of message.files) {
                 const remoteFile = await fetch(file.location);
-                const readableStream = await remoteFile.blob()
+                const readableStream = remoteFile.body
                 const blob = await blueskyClient.uploadBlob(readableStream);
                 embed.images.push({ image: blob.ref, alt: file.location })
             }
         }
-    
+
         return blueskyClient.post({
             text: message.text,
             embed,
             reply
-        })    
+        })
     } catch (error) {
         console.error(error)
         throw error
@@ -135,28 +135,60 @@ async function postMessagesOnBluesky(messages: Message[]): Promise<void> {
 
 // Publication on Twitter
 
+async function postMessageOnTwitter(message: Message, reply: TweetV2PostTweetResult | null): Promise<TweetV2PostTweetResult> {
+    try {
+        const tweet: SendTweetV2Params = {}
+        if (message.text) {
+            tweet.text = message.text
+        }
+        if (message.files && message.files.length > 0) {
+            const mediaIds = []
+            for (const file of message.files) {
+                const mediaResponse = await fetch(file.location);
+                const mediaData = await mediaResponse.arrayBuffer();
+                const mediaId = await twitterClient.v1.uploadMedia(Buffer.from(mediaData), { mimeType: file.mimetype })
+                mediaIds.push(mediaId)
+            }
+            tweet.media = { media_ids: mediaIds }
+        }
+        if (reply && reply.data) {
+            tweet.reply = { in_reply_to_tweet_id: reply.data.id }
+        }
+        return twitterClient.v2.tweet(tweet)
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+
 async function postMessagesOnTwitter(messages: Message[]): Promise<void> {
-    const tweets = messages.map(message => message.text)
-    await twitterClient.v2.tweetThread(tweets);
+    let reply: TweetV2PostTweetResult | null = null
+
+    for (const message of messages) {
+        console.log('Publish message on Twitter')
+        reply = await postMessageOnTwitter(message, reply);
+        console.log('Message published on twitter.')
+    }
 }
 
 async function postMessages(messages: Message[]): Promise<void> {
-    console.log('Publish messages on Bluesky')
+    //console.log('Publish messages on Bluesky')
     //await postMessagesOnBluesky(messages)
-    console.log('Messages published on Bluesky.')
+    //console.log('Messages published on Bluesky.')
 
-    console.log('Publish messages on Mastodon…')
-    await postMessagesOnMastodon(messages)
-    console.log('Messages published on Mastodon.')
+    //console.log('Publish messages on Mastodon…')
+    //await postMessagesOnMastodon(messages)
+    //console.log('Messages published on Mastodon.')
 
-    // console.log('Publish messages on Twitter…')
-    // await postMessagesOnTwitter(messages)
-    // console.log('Messages published on Twitter.')
+    console.log('Publish messages on Twitter…')
+    await postMessagesOnTwitter(messages)
+    console.log('Messages published on Twitter.')
 }
 
 interface MessageAttachment {
     location: string;
     data: any;
+    mimetype?: string;
 }
 
 interface Message {
