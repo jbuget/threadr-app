@@ -61,7 +61,7 @@ async function postMessagesOnMastodon(messages: Message[]): Promise<void> {
 
     for (const message of messages) {
         console.log('Publish message on Mastodon…')
-        const status: mastodon.v1.Status = await postMessageOnMastodon(message.body, inReplyToId);
+        const status: mastodon.v1.Status = await postMessageOnMastodon(message.text, inReplyToId);
         inReplyToId = status.id
         console.log('Message published on Mastodon.')
     }
@@ -93,7 +93,7 @@ async function postMessagesOnBluesky(messages: Message[]): Promise<void> {
 
     for (const message of messages) {
         console.log('Publish message on Bluesky')
-        const recordRef: RecordRef = await postMessageOnBluesky(message.body, reply);
+        const recordRef: RecordRef = await postMessageOnBluesky(message.text, reply);
         reply = {
             parent: {
                 cid: recordRef.cid,
@@ -111,7 +111,7 @@ async function postMessagesOnBluesky(messages: Message[]): Promise<void> {
 // Publication on Twitter
 
 async function postMessagesOnTwitter(messages: Message[]): Promise<void> {
-    const tweets = messages.map(message => message.body)
+    const tweets = messages.map(message => message.text)
     await twitterClient.v2.tweetThread(tweets);
 }
 
@@ -129,8 +129,14 @@ async function postMessages(messages: Message[]): Promise<void> {
     console.log('Messages published on Twitter.')
 }
 
+interface MessageAttachment {
+    location: string;
+    data: any;
+}
+
 interface Message {
-    body: string;
+    text: string;
+    files?: MessageAttachment[];
 }
 
 export default defineEventHandler(async (event) => {

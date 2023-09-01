@@ -4,12 +4,12 @@ import { useToast } from "primevue/usetoast";
 const toast = useToast();
 
 const messages = reactive([{
-    body: '',
+    text: '',
     files: []
 }])
 
 function addMessageBelow(index: number) {
-    const newMessage = { body: '', files: [] }
+    const newMessage = { text: '', files: [] }
     messages.splice(index, 0, newMessage);
 }
 
@@ -21,7 +21,7 @@ function removeMessage(index: number) {
 }
 
 async function publishThread() {
-    const nonEmptyMessages = messages.filter((message) => message.body.trim().length > 0)
+    const nonEmptyMessages = messages.filter((message) => message.text.trim().length > 0)
     //await $fetch('/api/threads', { method: 'post', body: { messages: nonEmptyMessages } })
     toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
 }
@@ -37,20 +37,28 @@ function onAdvancedUpload(event?: any) {
         <Toast />
         <div class="messages">
             <div class="message" v-for="(message, index) in messages">
-                <Textarea v-model="message.body" placeholder="What's up?" rows="4" autoResize></Textarea>
+                <Textarea v-model="message.text" placeholder="What's up?" rows="4" autoResize></Textarea>
                 <div class="actions">
                     <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
                     <div class="message-index"><span>{{ index + 1 }}/{{ messages.length }}</span></div>
                     <div class="add-attachments">
                         <!-- Max file size: ~8Mb, according to Mastodon max size --->
                         <!-- cf. https://docs.joinmastodon.org/user/posting/#media -->
-                        <FileUpload mode="advanced" name="attachments" url="/api/media" accept="image/*" :multiple="true" :fileLimit=4 :maxFileSize="8000000" @upload="onAdvancedUpload($event)">
+                        <FileUpload mode="advanced" 
+                        name="attachments" 
+                        url="/api/media" 
+                        accept="image/*" 
+                        :multiple="true" 
+                        :fileLimit=4 
+                        :maxFileSize="8000000" 
+                        :showCancelButton=false
+                        @upload="onAdvancedUpload($event)">
                             <template #empty>
                                 <p>Drag and drop files to here to upload.</p>
                             </template>
                         </FileUpload>
                     </div>
-                    <div class="message-length">{{ message.body.length }}/280</div>
+                    <div class="message-length">{{ message.text.length }}/280</div>
                     <div class="add-message" role="button" tabindex="0" title="Add message"
                         @keyup.enter="addMessageBelow(index + 1)" @click="addMessageBelow(index + 1)">
                         <span>+</span>
