@@ -78,10 +78,9 @@ function onUploadedFileRemoved(event: FileUploadRemoveUploadedFile) {
         </div>
         <div class="message-attachments">
             <div class="add-attachments">
-                <!-- Max file size: ~8Mb, according to Mastodon max size --->
-                <!-- cf. https://docs.joinmastodon.org/user/posting/#media -->
+                <!-- Max file size: ~1Mb because of BlueSky (Masto = 8Mb) --->
                 <FileUpload mode="advanced" name="attachments" url="/api/media" accept="image/*,video/*" :multiple="true"
-                    :fileLimit="4" :maxFileSize="8000000" chooseLabel="Add media…" :showCancelButton="false"
+                    :fileLimit="4" :maxFileSize="1000000" chooseLabel="Add media…" :showCancelButton="false"
                     :show-upload-button="false" :unstyled="false" :auto="true" @upload="onUploadComplete($event)"
                     @removeUploadedFile="onUploadedFileRemoved($event)">
                     <template #empty>
