@@ -37,7 +37,9 @@ async function publishThread() {
                     <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
                     <div class="message-index"><span>{{ index + 1 }}/{{ messages.length }}</span></div>
                     <div class="add-attachments">
-                        <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true" />
+                        <!-- Max file size: ~8Mb, according to Mastodon max size --->
+                        <!-- cf. https://docs.joinmastodon.org/user/posting/#media -->
+                        <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true" :maxFileSize="8000000" :auto="true" />
                     </div>
                     <div class="message-length">{{ message.body.length }}/280</div>
                     <div class="add-message" role="button" tabindex="0" title="Add message"
