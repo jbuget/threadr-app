@@ -21,7 +21,7 @@ function removeMessage(index: number): void {
 }
 
 async function publishThread(): Promise<void> {
-    const nonEmptyMessages = messages.filter((message) => message.text.trim().length > 0 && message.files.length > 0)
+    const nonEmptyMessages = messages.filter((message) => message.text.trim().length > 0 || message.files.length > 0)
     await $fetch('/api/threads', { method: 'post', body: { messages: nonEmptyMessages } })
     toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
 }

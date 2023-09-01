@@ -49,9 +49,22 @@ async function connectClients(): Promise<void> {
 // Publication on Mastodon
 
 async function postMessageOnMastodon(message: Message, inReplyToId: string | null): Promise<mastodon.v1.Status> {
+    const mediaIds: string[] = []
+    if (message.files) {
+        for (const file of message.files) {
+            const remoteFile = await fetch(file.location);
+            const attachment = await mastodonClient.v2.media.create({
+                file: await remoteFile.blob(),
+                description: file.location,
+            });
+            mediaIds.push(attachment.id)
+        }
+    }
+
     return mastodonClient.v1.statuses.create({
         status: message.text,
         visibility: 'public',
+        mediaIds,
         inReplyToId
     });
 }
@@ -65,7 +78,6 @@ async function postMessagesOnMastodon(messages: Message[]): Promise<void> {
         inReplyToId = status.id
         console.log('Message published on Mastodon.')
     }
-
 }
 
 // Publication on Bluesky
@@ -76,15 +88,28 @@ interface RecordRef {
 }
 
 async function postMessageOnBluesky(message: Message, reply: ReplyRef | null): Promise<RecordRef> {
-    if (reply) {
+    try {
+        let embed: any
+        if (message.files) {
+            embed = {
+                images: []
+            }
+            for (const file of message.files) {
+                const remoteFile = await fetch(file.location);
+                const readableStream = await remoteFile.blob()
+                const blob = await blueskyClient.uploadBlob(readableStream);
+                embed.images.push({ image: blob.ref, alt: file.location })
+            }
+        }
+    
         return blueskyClient.post({
             text: message.text,
+            embed,
             reply
-        });
-    } else {
-        return blueskyClient.post({
-            text: message.text
-        });
+        })    
+    } catch (error) {
+        console.error(error)
+        throw error
     }
 }
 
@@ -117,16 +142,16 @@ async function postMessagesOnTwitter(messages: Message[]): Promise<void> {
 
 async function postMessages(messages: Message[]): Promise<void> {
     console.log('Publish messages on Bluesky')
-//    await postMessagesOnBluesky(messages)
+    //await postMessagesOnBluesky(messages)
     console.log('Messages published on Bluesky.')
 
     console.log('Publish messages on Mastodon…')
     await postMessagesOnMastodon(messages)
     console.log('Messages published on Mastodon.')
 
-    console.log('Publish messages on Twitter…')
-//    await postMessagesOnTwitter(messages)
-    console.log('Messages published on Twitter.')
+    // console.log('Publish messages on Twitter…')
+    // await postMessagesOnTwitter(messages)
+    // console.log('Messages published on Twitter.')
 }
 
 interface MessageAttachment {
