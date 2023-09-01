@@ -48,9 +48,9 @@ async function connectClients(): Promise<void> {
 
 // Publication on Mastodon
 
-async function postMessageOnMastodon(status: string, inReplyToId: string | null): Promise<mastodon.v1.Status> {
+async function postMessageOnMastodon(message: Message, inReplyToId: string | null): Promise<mastodon.v1.Status> {
     return mastodonClient.v1.statuses.create({
-        status,
+        status: message.text,
         visibility: 'public',
         inReplyToId
     });
@@ -61,7 +61,7 @@ async function postMessagesOnMastodon(messages: Message[]): Promise<void> {
 
     for (const message of messages) {
         console.log('Publish message on Mastodon…')
-        const status: mastodon.v1.Status = await postMessageOnMastodon(message.text, inReplyToId);
+        const status: mastodon.v1.Status = await postMessageOnMastodon(message, inReplyToId);
         inReplyToId = status.id
         console.log('Message published on Mastodon.')
     }
@@ -75,15 +75,15 @@ interface RecordRef {
     cid: string;
 }
 
-async function postMessageOnBluesky(status: string, reply: ReplyRef | null): Promise<RecordRef> {
+async function postMessageOnBluesky(message: Message, reply: ReplyRef | null): Promise<RecordRef> {
     if (reply) {
         return blueskyClient.post({
-            text: status,
+            text: message.text,
             reply
         });
     } else {
         return blueskyClient.post({
-            text: status
+            text: message.text
         });
     }
 }
@@ -93,7 +93,7 @@ async function postMessagesOnBluesky(messages: Message[]): Promise<void> {
 
     for (const message of messages) {
         console.log('Publish message on Bluesky')
-        const recordRef: RecordRef = await postMessageOnBluesky(message.text, reply);
+        const recordRef: RecordRef = await postMessageOnBluesky(message, reply);
         reply = {
             parent: {
                 cid: recordRef.cid,
@@ -117,7 +117,7 @@ async function postMessagesOnTwitter(messages: Message[]): Promise<void> {
 
 async function postMessages(messages: Message[]): Promise<void> {
     console.log('Publish messages on Bluesky')
-    await postMessagesOnBluesky(messages)
+//    await postMessagesOnBluesky(messages)
     console.log('Messages published on Bluesky.')
 
     console.log('Publish messages on Mastodon…')
@@ -125,7 +125,7 @@ async function postMessages(messages: Message[]): Promise<void> {
     console.log('Messages published on Mastodon.')
 
     console.log('Publish messages on Twitter…')
-    await postMessagesOnTwitter(messages)
+//    await postMessagesOnTwitter(messages)
     console.log('Messages published on Twitter.')
 }
 
@@ -144,7 +144,7 @@ export default defineEventHandler(async (event) => {
     console.log('Publish thread…')
     console.log(body)
     await connectClients()
-    //await postMessages(body.messages)
+    await postMessages(body.messages)
     console.log('Thread published 🎉')
     return { body }
 })
