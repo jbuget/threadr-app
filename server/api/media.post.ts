@@ -47,7 +47,7 @@ function parseMultipartNodeRequest(req: IncomingMessage) {
             });
             const uploadRequest = upload.done().then((response:any) => {
                 file.objectKey = fileObjectKey
-                file.location = response.Location
+                file.location = process.env.MINIO_ENDPOINT + '/' + process.env.MINIO_BUCKET_NAME + '/' + response.Key
             });
             s3Uploads.push(uploadRequest);
             return body;

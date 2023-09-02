@@ -77,6 +77,11 @@ function onUploadedFileRemoved(event: FileUploadRemoveUploadedFile) {
             <Textarea v-model="message.text" placeholder="What's up?" rows="4" autoResize></Textarea>
         </div>
         <div class="message-attachments">
+            <div class="attachment" v-for="(file, index) in message.files">
+                <Image :src=file.location class="attachment-img" alt="Image" preview />
+            </div>
+        </div>
+        <div>
             <div class="add-attachments">
                 <!-- Max file size: ~1Mb because of BlueSky (Masto = 8Mb) --->
                 <FileUpload mode="advanced" name="attachments" url="/api/media" accept="image/*" :multiple="true"
@@ -192,9 +197,41 @@ function onUploadedFileRemoved(event: FileUploadRemoveUploadedFile) {
     width: 100%;
 }
 
-.message-attachments {}
-
 .message-index {
     color: lightsteelblue;
+}
+
+.message-attachments {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.attachment {
+    position: relative;
+    cursor: pointer;
+    width: 100%;
+    height: 0px;
+    padding-bottom: 64.5%;
+    overflow: hidden;
+    box-sizing: border-box;
+    line-height: 0;
+}
+
+.attachment>.img {
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+}
+
+.p-image>img {
+    width: 100%;
 }
 </style>
