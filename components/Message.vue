@@ -49,6 +49,19 @@ function onUploadedFileRemoved(event: FileUploadRemoveUploadedFile) {
     props.message.files.splice(fileIndex, 1)
 }
 
+const messageAttachmentsStyle = computed(() => {
+    if (props.message.files) {
+        if (props.message.files.length === 2 || props.message.files.length === 4) {
+            return { gridTemplateColumns: "1fr 1fr" }
+        }
+        if (props.message.files.length === 3) {
+            debugger
+            return { gridTemplateColumns: "1fr 1fr 1fr" }
+        }
+    }
+    return { gridTemplateColumns: "1fr" }
+})
+
 /* function onFilesSelected(event: FileUploadSelectEvent) {
     let selectedFileIndexesToRemove: number[] = [] // by reverse order
     const selectedFiles = event.files
@@ -76,7 +89,7 @@ function onUploadedFileRemoved(event: FileUploadRemoveUploadedFile) {
         <div class="message-text">
             <Textarea v-model="message.text" placeholder="What's up?" rows="4" autoResize></Textarea>
         </div>
-        <div class="message-attachments">
+        <div class="message-attachments" :style="messageAttachmentsStyle">
             <div class="attachment" v-for="(file, index) in message.files">
                 <Image :src=file.location class="attachment-img" alt="Image" preview />
             </div>
@@ -84,7 +97,7 @@ function onUploadedFileRemoved(event: FileUploadRemoveUploadedFile) {
         <div>
             <div class="add-attachments">
                 <!-- Max file size: ~1Mb because of BlueSky (Masto = 8Mb) --->
-                <FileUpload mode="advanced" name="attachments" url="/api/media" accept="image/*" :multiple="true"
+                <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true"
                     :fileLimit="4" :maxFileSize="1000000" chooseLabel="Add media…" :showCancelButton="false"
                     :show-upload-button="false" :unstyled="false" :auto="true" @upload="onUploadComplete($event)"
                     @removeUploadedFile="onUploadedFileRemoved($event)">
@@ -203,10 +216,11 @@ function onUploadedFileRemoved(event: FileUploadRemoveUploadedFile) {
 
 .message-attachments {
     display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 3px;
     width: 100%;
     overflow: hidden;
+    border-radius: 8px;
+    background-color: whitesmoke;
 }
 
 .attachment {
