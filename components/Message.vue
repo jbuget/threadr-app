@@ -79,7 +79,7 @@ function onUploadedFileRemoved(event: FileUploadRemoveUploadedFile) {
         <div class="message-attachments">
             <div class="add-attachments">
                 <!-- Max file size: ~1Mb because of BlueSky (Masto = 8Mb) --->
-                <FileUpload mode="advanced" name="attachments" url="/api/media" accept="image/*,video/*" :multiple="true"
+                <FileUpload mode="advanced" name="attachments" url="/api/media" accept="image/*" :multiple="true"
                     :fileLimit="4" :maxFileSize="1000000" chooseLabel="Add media…" :showCancelButton="false"
                     :show-upload-button="false" :unstyled="false" :auto="true" @upload="onUploadComplete($event)"
                     @removeUploadedFile="onUploadedFileRemoved($event)">
