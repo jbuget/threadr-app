@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  threadr-app:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - minio
+
+  minio:
+    image: minio/minio
+    command: 'server --console-address ":9001" /data'
+    env_file:
+      - .env
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_storage:/data
+
+volumes:
+  minio_storage: {}

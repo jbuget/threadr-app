@@ -4,10 +4,9 @@ import { PassThrough, Writable } from 'node:stream'
 import { S3Client } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
 import { IncomingMessage } from 'http'
-import VolatileFile from 'formidable/VolatileFile'
 
 const s3Client = new S3Client({
-    endpoint: process.env.MINIO_URL as string,
+    endpoint: process.env.MINIO_ENDPOINT as string,
     region: process.env.MINIO_REGION as string,
     credentials: {
         accessKeyId: process.env.MINIO_ACCESS_KEY as string,
