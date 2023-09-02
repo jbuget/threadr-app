@@ -89,24 +89,30 @@ interface RecordRef {
 
 async function postMessageOnBluesky(message: Message, reply: ReplyRef | null): Promise<RecordRef> {
     try {
-        let embed: any
-        if (message.files) {
+
+        const record: any = {}
+        record.text = message.text
+
+        if (message.files && message.files.length > 0) {
+            let embed: any
             embed = {
+                $type: 'app.bsky.embed.images',
                 images: []
             }
             for (const file of message.files) {
-                const remoteFile = await fetch(file.location);
-                const readableStream = remoteFile.body
-                const blob = await blueskyClient.uploadBlob(readableStream);
-                embed.images.push({ image: blob.ref, alt: file.location })
+                const mediaFile = await fetch(file.location);
+                const mediaData = await mediaFile.arrayBuffer();
+                const mediaResponse = await blueskyClient.uploadBlob(Buffer.from(mediaData), { encoding: file.mimetype });
+                embed.images.push({ image: mediaResponse.data.blob, alt: file.location })
             }
+            record.embed = embed
         }
 
-        return blueskyClient.post({
-            text: message.text,
-            embed,
-            reply
-        })
+        if (reply) {
+            record.reply = reply
+        }
+
+        return blueskyClient.post(record)
     } catch (error) {
         console.error(error)
         throw error
@@ -114,22 +120,27 @@ async function postMessageOnBluesky(message: Message, reply: ReplyRef | null): P
 }
 
 async function postMessagesOnBluesky(messages: Message[]): Promise<void> {
-    let reply: ReplyRef | null = null
+    try {
+        let reply: ReplyRef | null = null
 
-    for (const message of messages) {
-        console.log('Publish message on Bluesky')
-        const recordRef: RecordRef = await postMessageOnBluesky(message, reply);
-        reply = {
-            parent: {
-                cid: recordRef.cid,
-                uri: recordRef.uri
-            },
-            root: {
-                cid: recordRef.cid,
-                uri: recordRef.uri
+        for (const message of messages) {
+            console.log('Publish message on Bluesky')
+            const recordRef: RecordRef = await postMessageOnBluesky(message, reply);
+            reply = {
+                parent: {
+                    cid: recordRef.cid,
+                    uri: recordRef.uri
+                },
+                root: {
+                    cid: recordRef.cid,
+                    uri: recordRef.uri
+                }
             }
+            console.log('Message published on Bluesky.')
         }
-        console.log('Message published on Bluesky.')
+    } catch (error) {
+        console.error(error)
+        throw error
     }
 }
 
@@ -172,13 +183,13 @@ async function postMessagesOnTwitter(messages: Message[]): Promise<void> {
 }
 
 async function postMessages(messages: Message[]): Promise<void> {
-    //console.log('Publish messages on Bluesky')
-    //await postMessagesOnBluesky(messages)
-    //console.log('Messages published on Bluesky.')
+    console.log('Publish messages on Bluesky')
+    await postMessagesOnBluesky(messages)
+    console.log('Messages published on Bluesky.')
 
-    //console.log('Publish messages on Mastodon…')
-    //await postMessagesOnMastodon(messages)
-    //console.log('Messages published on Mastodon.')
+     console.log('Publish messages on Mastodon…')
+    await postMessagesOnMastodon(messages)
+    console.log('Messages published on Mastodon.')
 
     console.log('Publish messages on Twitter…')
     await postMessagesOnTwitter(messages)
