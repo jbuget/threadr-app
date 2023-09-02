@@ -84,43 +84,33 @@ const messageAttachmentsStyle = computed(() => {
 <template>
     <div class="message">
         <div class="message-meta">
-            <div class="message-index"><span>#{{ index + 1 }}</span></div>
+            <span class="message-username">Jérémy Buget 🇫🇷 🇪🇺 · @jbuget@piaille.fr</span>
         </div>
         <div class="message-text">
-            <Textarea v-model="message.text" placeholder="What's up?" rows="4" autoResize></Textarea>
+            <Textarea v-model="message.text" placeholder="What's up?" rows="2" autoResize :unstyled="true"></Textarea>
         </div>
         <div class="message-attachments" :style="messageAttachmentsStyle">
             <div class="attachment" v-for="(file, index) in message.files">
-                <Image :src=file.location class="attachment-img" alt="Image" preview />
-            </div>
-        </div>
-        <div>
-            <div class="add-attachments">
-                <!-- Max file size: ~1Mb because of BlueSky (Masto = 8Mb) --->
-                <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true"
-                    :fileLimit="4" :maxFileSize="1000000" chooseLabel="Add media…" :showCancelButton="false"
-                    :show-upload-button="false" :unstyled="false" :auto="true" @upload="onUploadComplete($event)"
-                    @removeUploadedFile="onUploadedFileRemoved($event)">
-                    <template #empty>
-                        <p>Drag and drop files to here to upload.</p>
-                    </template>
-                    <template #chooseicon>
-                        <i class="pi pi-file"></i>
-                    </template>
-                </FileUpload>
+                <Image :src=file.location class="attachment-img" alt="Image" />
             </div>
         </div>
         <div class="actions">
             <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
             <div class="message-length">{{ message.text.length }}/280</div>
-            <div class="add-message" role="button" tabindex="0" title="Add message"
-                @keyup.enter="$emit('add-message-below')" @click="$emit('add-message-below')">
-                <span>+</span>
+            <div class="message-index"><span>#{{ index + 1 }}</span></div>
+            <div class="add-attachments">
+                <!-- Max file size: ~1Mb because of BlueSky (Masto = 8Mb) --->
+                <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true"
+                    :fileLimit="4" :maxFileSize="1000000" chooseLabel=" " :showCancelButton="false"
+                    :show-upload-button="false" :unstyled="false" :auto="true" @upload="onUploadComplete($event)"
+                    @removeUploadedFile="onUploadedFileRemoved($event)" >
+                    <template #chooseicon>
+                        <i class="pi pi-file"></i>
+                    </template>
+                </FileUpload>
             </div>
-            <div class="remove-message" role="button" tabindex="0" title="Remove message"
-                @keyup.enter="$emit('remove-message')" @click="$emit('remove-message')">
-                <span>-</span>
-            </div>
+            <Button class="" icon="pi pi-plus" size="small" text rounded @enter="$emit('add-message-below')" @click="$emit('add-message-below')"/>
+            <Button class="" icon="pi pi-minus" size="small" text rounded @enter="$emit('remove-message')" @click="$emit('remove-message')"/>
         </div>
     </div>
 </template>
@@ -159,8 +149,7 @@ const messageAttachmentsStyle = computed(() => {
 }
 
 .actions div {
-    margin-right: 8px;
-    padding: 5px 10px;
+    margin-right: 12px;
 }
 
 .actions div[role="button"] {
@@ -198,20 +187,31 @@ const messageAttachmentsStyle = computed(() => {
     background-color: rgb(249, 24, 128, 0.1)
 }
 
+.message-username {
+    font-weight: 900;
+}
+
 .message {
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
 }
 
-.message-text {}
+.message-text > textarea {
+    resize: none;
+    border: none;
+}
 
 .message-text>textarea {
     width: 100%;
 }
 
+.message-length {
+    color: gray;
+}
+
 .message-index {
-    color: lightsteelblue;
+    color: gray;
 }
 
 .message-attachments {
@@ -225,7 +225,6 @@ const messageAttachmentsStyle = computed(() => {
 
 .attachment {
     position: relative;
-    cursor: pointer;
     width: 100%;
     height: 0px;
     padding-bottom: 64.5%;
@@ -248,4 +247,5 @@ const messageAttachmentsStyle = computed(() => {
 .p-image>img {
     width: 100%;
 }
+
 </style>
