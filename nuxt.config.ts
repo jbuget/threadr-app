@@ -21,4 +21,9 @@ export default defineNuxtConfig({
       Mulish: true
     }
   },
+  runtimeConfig: {
+    public: {
+      displayingName: process.env.DISPLAYING_NAME,
+    }
+  },
 })

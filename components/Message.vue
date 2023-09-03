@@ -2,6 +2,8 @@
 import { FileUploadBeforeUploadEvent, FileUploadRemoveEvent, FileUploadRemoveUploadedFile, FileUploadSelectEvent, FileUploadUploadEvent } from "primevue/fileupload";
 import { useToast } from "primevue/usetoast";
 
+const config = useRuntimeConfig()
+
 const toast = useToast();
 
 class Attachment {
@@ -84,7 +86,7 @@ const messageAttachmentsStyle = computed(() => {
 <template>
     <div class="message">
         <div class="message-meta">
-            <span class="message-username">Jérémy Buget 🇫🇷 🇪🇺 · @jbuget@piaille.fr</span>
+            <span class="message-username">{{ config.public.displayingName }}</span>
         </div>
         <div class="message-text">
             <Textarea v-model="message.text" placeholder="What's up?" rows="2" autoResize :unstyled="true"></Textarea>
