@@ -7,7 +7,7 @@
 
 <style>
 .app {
-  width: 640px;
+  width: 500px;
   margin: 0 auto;
 }
 </style>

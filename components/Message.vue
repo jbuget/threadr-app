@@ -57,7 +57,6 @@ const messageAttachmentsStyle = computed(() => {
             return { gridTemplateColumns: "1fr 1fr" }
         }
         if (props.message.files.length === 3) {
-            debugger
             return { gridTemplateColumns: "1fr 1fr 1fr" }
         }
     }
@@ -105,14 +104,17 @@ const messageAttachmentsStyle = computed(() => {
                 <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true"
                     :fileLimit="4" :maxFileSize="1000000" chooseLabel=" " :showCancelButton="false"
                     :show-upload-button="false" :unstyled="false" :auto="true" @upload="onUploadComplete($event)"
-                    @removeUploadedFile="onUploadedFileRemoved($event)" >
-                    <template #chooseicon>
-                        <i class="pi pi-file"></i>
-                    </template>
+                    @removeUploadedFile="onUploadedFileRemoved($event)" title="Add media">
                 </FileUpload>
             </div>
-            <Button class="" icon="pi pi-plus" size="small" text rounded @enter="$emit('add-message-below')" @click="$emit('add-message-below')"/>
-            <Button class="" icon="pi pi-minus" size="small" text rounded @enter="$emit('remove-message')" @click="$emit('remove-message')"/>
+            <div class="add-message-below">
+                <Button icon="pi pi-plus" size="small" text @enter="$emit('add-message-below')"
+                    @click="$emit('add-message-below')" severity="secondary" title="Add message below" />
+            </div>
+            <div class="remove-message">
+                <Button icon="pi pi-minus" size="small" text @enter="$emit('remove-message')"
+                    @click="$emit('remove-message')" severity="secondary" title="Delete this message" />
+            </div>
         </div>
     </div>
 </template>
@@ -147,11 +149,11 @@ const messageAttachmentsStyle = computed(() => {
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
-    padding: 10px 0;
+    padding: 0;
 }
 
 .actions div {
-    margin-right: 12px;
+    margin-right: 0.5rem;
 }
 
 .actions div[role="button"] {
@@ -194,12 +196,12 @@ const messageAttachmentsStyle = computed(() => {
 }
 
 .message {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
 }
 
-.message-text > textarea {
+.message-text>textarea {
     resize: none;
     border: none;
 }
@@ -250,4 +252,60 @@ const messageAttachmentsStyle = computed(() => {
     width: 100%;
 }
 
+.add-attachments {
+    margin-right: 0 !important;
+}
+
+.p-fileupload {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.p-button.p-fileupload-choose {
+    height: 3rem;
+    width: 3rem;
+    padding: 0;
+    background-color: transparent;
+    border-color: transparent;
+    color: #64748B;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.p-button.p-fileupload-choose:active,
+.p-button.p-fileupload-choose:focus,
+.p-button.p-fileupload-choose:hover {
+    border-color: transparent;
+    color: #64748B;
+}
+
+.p-button.p-fileupload-choose:active {
+    background-color: rgba(100, 116, 139, 0.16)!important;
+}
+
+.p-button.p-fileupload-choose:hover {
+    background-color: rgba(100, 116, 139, 0.04);
+}
+
+.p-button.p-fileupload-choose:focus {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #b0b9c6, 0 1px 2px 0 black;
+}
+
+.p-fileupload-choose>svg {
+    margin: 0 !important;
+}
+
+.p-fileupload-choose>.p-button-label {
+    display: none;
+}
+
+.actions .p-button {
+    padding: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+}
 </style>
