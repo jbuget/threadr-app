@@ -1,63 +1,45 @@
-# Nuxt 3 Minimal Starter
+# Threadr
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Threadr is a small (#workinprogress) web application that helps users of micro-blogging platforms to write great threads and allows them to crosspost in one click their content to Bluesky, Mastodon and Twitter/X.
 
-## Setup
+## Installation
 
-Make sure to install the dependencies:
+For now, Threadr only works in localhost.
 
-```bash
-# npm
-npm install
+**1/** Get the project sources
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
+```shell
+$ git clone git@github.com:jbuget/threadr-app.git && cd threadr-app
 ```
 
-## Development Server
+**2/** Copy the `.env.sample` file into a new `.env` file
 
-Start the development server on `http://localhost:3000`:
+You previously must generate, get and report your access keys for Twitter/X (new developer project), Mastodon (new app) and Bluesky (your user credentials).
 
-```bash
-# npm
-npm run dev
+**3/** Run the Docker compose service `minio` (required to upload media files into platforms)
 
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
+```shell
+$ docker compose -d minio
 ```
 
-## Production
+**4/** Configure your MinIO instance
 
-Build the application for production:
+MinIO console is accessible on [localhost:9001](http://localhost:9001) (credentials in `.env`file, cf. `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`)
 
-```bash
-# npm
-npm run build
+Create a bucket (ex: "threadr-app" in `.env.sample`).
 
-# pnpm
-pnpm run build
+In the settings, configure MinIO region (ex: "eu-fr-1" in `.env.sample`).
 
-# yarn
-yarn build
+> ⚠️ It is recommanded to declare a custom policy with dedicacted path in `readonly` acces for anonymous visitors
+
+**5/** Run Threadr locally
+
+```shell
+$ npm install
+$ npm run dev -- -o
 ```
 
-Locally preview production build:
+**6/** 🚀 Enjoy Threadr at [localhost:3000](http://localhost:3000)!
 
-```bash
-# npm
-npm run preview
+![Screenshot of Threader app](./threader.png)
 
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
