@@ -47,100 +47,119 @@ $ npm run dev -- -o
 
 All configuration option are set in the `.env` file.
 
-### Editing threads, messages and media
+<details>
 
-#### `DISPLAYING_NAME`: string
+<summary>Editing threads, messages and media</summary>
+
+**`DISPLAYING_NAME`: string**
 
 The name displayed on the header of each message in the Editor.
 
-### Publishing on Bluesky
+</details>
 
-#### `BLUESKY_ENABLED`: boolean
+<details>
+
+<summary>Publishing on Bluesky</summary>
+
+**`BLUESKY_ENABLED`: boolean**
 
 Activate or deactivate posting on Bluesky platform.
 
-#### `BLUESKY_URL`: URL
+**`BLUESKY_URL`: URL**
 
 Bluesky is based on the [Authenticated Transfer Protocol](https://atproto.com/guides/overview). 
 Today, Bluesky API endpoint URL is `https://bsky.social` but maybe one day it will be a different one.
 
-#### `BLUESKY_IDENTIFIER`: string
+**`BLUESKY_IDENTIFIER`: string**
 
 The username of the Bluesky publisher account.
 
-#### `BLUESKY_PASSWORD`: string
+**`BLUESKY_PASSWORD`: string**
 
 The password of the Bluesky publisher account.
 
-### Publishing on Mastodon
+</details>
 
-#### `MASTODON_ENABLED`: boolean
+<details>
+
+<summary>Publishing on Mastodon</summary>
+
+**`MASTODON_ENABLED`: boolean**
 
 Activate or deactivate posting on Mastodon platform.
 
-#### `MASTODON_URL`: URL
+**`MASTODON_URL`: URL**
 
 The Mastodon instance URL.Check that the instance allows API.
 
-#### `MASTODON_ACCESS_TOKEN`: string
+**`MASTODON_ACCESS_TOKEN`: string**
 
 The token of the Mastodon publisher app.
 
-### Publishing on Twitter
+</details>
 
-#### `TWITTER_ENABLED`: boolean
+<details>
+
+<summary>Publishing on Twitter</summary>
+
+**`TWITTER_ENABLED`: boolean**
 
 Activate or deactivate posting on Twitter platform.
 
 > cf. [the official Twitter documentation](https://developer.twitter.com/en/docs/authentication/oauth-1-0a/api-key-and-secret) about how to generate tokens.
 
-#### `TWITTER_CONSUMER_KEY`: string
+**`TWITTER_CONSUMER_KEY`: string**
 
 The Twitter app Consumer Key.
 
-#### `TWITTER_CONSUMER_SECRET`: string
+**`TWITTER_CONSUMER_SECRET`: string**
 
 The Twitter app Consumer Secret.
 
-#### `TWITTER_ACCESS_TOKEN`: string
+**`TWITTER_ACCESS_TOKEN`: string**
 
 Twitter app’s authentication access token.
 
 > cf. [OAuth 2.0 Authorization Code](https://developer.twitter.com/en/docs/authentication/oauth-2-0/authorization-code)
-#### `TWITTER_ACCESS_SECRET`: string
+**`TWITTER_ACCESS_SECRET`: string**
 
 Twitter app’s authentication access secret.
+</details>
 
-### Uploading media files
+<details>
 
-#### `MINIO_ENDPOINT`: URL
+<summary>Uploading media files</summary>
+
+**`MINIO_ENDPOINT`: URL**
 
 The endpoint URL of MinIO/S3 server on which temporarily upload media files.
 
-#### `MINIO_REGION`: string
+**`MINIO_REGION`: string**
 
 The region of the MinIO/S3 server.
 
-#### `MINIO_BUCKET_NAME`: string
+**`MINIO_BUCKET_NAME`: string**
 
 The bucket where the media files will be upload before being sent to platforms.
 
-#### `MINIO_MEDIA_PATH`: string
+**`MINIO_MEDIA_PATH`: string**
 
 The folder path inside the bucket.
 
-#### `MINIO_ACCESS_KEY`: string
+**`MINIO_ACCESS_KEY`: string**
 
 The MinIO access key to access the bucket in order to deposit media files.
 
-#### `MINIO_SECRET_KEY`: string
+**`MINIO_SECRET_KEY`: string**
 
 The MinIO access secret key to access the bucket in order to deposit media files.
 
-#### `MINIO_ROOT_USER`: string
+**`MINIO_ROOT_USER`: string**
 
 The MinIO administration account username (used for docker-compose MinIO container).
 
-#### `MINIO_ROOT_PASSWORD`: string
+**`MINIO_ROOT_PASSWORD`: string**
 
 The MinIO administration account password (used for docker-compose MinIO container).
+
+</details>
