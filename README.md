@@ -41,7 +41,9 @@ $ npm run dev -- -o
 
 **6/** 🚀 Enjoy Threadr at [localhost:3000](http://localhost:3000)!
 
-![Screenshot of Threader app](./threader.png)
+<p align="center">
+    <img src="/threader.png" width="480">
+</p>
 
 ## Configuration
 
