@@ -37,7 +37,7 @@ async function publishThread(): Promise<void> {
             </div>
             <Divider />
             <div class="publish">
-                <Button label="Publish" icon="pi pi-send" severity="success" @click="publishThread" />
+                <Button label="Publish" icon="pi pi-send" severity="success" size="small" @click="publishThread" />
             </div>
         </div>
     </div>
