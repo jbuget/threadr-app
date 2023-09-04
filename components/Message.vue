@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FileUploadBeforeUploadEvent, FileUploadRemoveEvent, FileUploadRemoveUploadedFile, FileUploadSelectEvent, FileUploadUploadEvent } from "primevue/fileupload";
+import { FileUploadUploadEvent } from "primevue/fileupload";
 import { useToast } from "primevue/usetoast";
 
 const config = useRuntimeConfig()
@@ -11,12 +11,14 @@ class Attachment {
     location!: string
     size!: number
     mimetype!: string
+    description?: string
 
-    constructor(filename: string, location: string, mimetype: string, size: number) {
+    constructor(filename: string, location: string, mimetype: string, size: number, description?: string) {
         this.filename = filename
         this.location = location
         this.mimetype = mimetype
         this.size = size
+        this.description = description
     }
 }
 
@@ -40,7 +42,7 @@ defineEmits(['add-message-below', 'remove-message'])
 function onUploadComplete(event: FileUploadUploadEvent) {
     const { files } = JSON.parse(event.xhr.response)
 
-    let attachments = files.map((file: any) => new Attachment(file.originalFilename, file.location, file.mimetype, file.size));
+    let attachments = files.map((file: any) => new Attachment(file.originalFilename, file.location, file.mimetype, file.size, file.description));
     props.message.files.push(...attachments)
 
     toast.add({ severity: 'success', summary: 'Success', detail: `File(s) uploaded`, life: 3000 });
@@ -58,15 +60,31 @@ const messageAttachmentsStyle = computed(() => {
     return { gridTemplateColumns: "1fr" }
 })
 
-function removeMedia(fileToDelete: Attachment) {
-    const mediaIndex = props.message.files.findIndex(file => {
-        return file.filename === fileToDelete.filename
-            && file.size === fileToDelete.size
-            && file.mimetype === fileToDelete.mimetype
-    })
-    if (mediaIndex >= 0) {
-        props.message.files.splice(mediaIndex, 1)
-    }
+function removeMedia(index: number) {
+    props.message.files.splice(index, 1)
+}
+
+const visible = ref(false)
+const emptyFile: Attachment = {
+    filename: "",
+    location: "",
+    size: 0,
+    mimetype: ""
+}
+const editingMedia = ref(emptyFile)
+
+function editMedia(file: Attachment) {
+    visible.value = true
+    editingMedia.value = file
+}
+
+function updateMedia() {
+    visible.value = false
+    editingMedia.value = emptyFile
+}
+
+function closeMediaEditionWithoutSave() {
+    visible.value = false
 }
 
 </script>
@@ -82,9 +100,15 @@ function removeMedia(fileToDelete: Attachment) {
         <div class="message-attachments" :style="messageAttachmentsStyle">
             <div class="attachment" v-for="(file, index) in message.files">
                 <Image class="attachment-img" :src=file.location alt="Image" />
-                <div class="remove-attachment">
-                    <Button icon="pi pi-times" size="small" text rounded outlined @enter="removeMedia(file)"
-                        @click="removeMedia(file)" severity="secondary" title="Remove media" />
+                <div class="attachment-actions">
+                    <div class="edit-attachment">
+                        <Button icon="pi pi-pencil" size="small" text rounded outlined @enter="editMedia(file)"
+                            @click="editMedia(file)" severity="secondary" title="Edit description" />
+                    </div>
+                    <div class="remove-attachment">
+                        <Button icon="pi pi-times" size="small" text rounded outlined @enter="removeMedia(index)"
+                            @click="removeMedia(index)" severity="secondary" title="Remove media" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -95,9 +119,8 @@ function removeMedia(fileToDelete: Attachment) {
             <div class="add-attachments">
                 <!-- Max file size: ~1Mb because of BlueSky (Masto = 8Mb) --->
                 <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true"
-                    :fileLimit="4" :maxFileSize="1000000" chooseLabel=" " :showCancelButton="false"
-                    :show-upload-button="false" :unstyled="false" :auto="true" @upload="onUploadComplete($event)"
-                    @removeUploadedFile="onUploadedFileRemoved($event)" title="Add media">
+                    :maxFileSize="1000000" chooseLabel=" " :showCancelButton="false" :show-upload-button="false"
+                    :unstyled="false" :auto="true" @upload="onUploadComplete($event)" title="Add media">
                 </FileUpload>
             </div>
             <div class="add-message-below">
@@ -109,6 +132,17 @@ function removeMedia(fileToDelete: Attachment) {
                     @click="$emit('remove-message')" severity="secondary" title="Delete this message" />
             </div>
         </div>
+        <Dialog v-model:visible="visible" modal :header=editingMedia.filename :style="{ width: '50vw' }">
+            <div class="media-edition">
+                <Image :src=editingMedia.location></Image>
+                <Textarea v-model="editingMedia.description" placeholder="What is the content of the media" rows="2" autoResize
+                    :unstyled="true"></Textarea>
+            </div>
+            <template #footer>
+                <Button label="No" icon="pi pi-times" @enter="closeMediaEditionWithoutSave()" @click="closeMediaEditionWithoutSave()" text />
+                <Button label="Yes" icon="pi pi-check" @enter="updateMedia()" @click="updateMedia()" autofocus />
+            </template>
+        </Dialog>
     </div>
 </template>
 
@@ -222,7 +256,7 @@ function removeMedia(fileToDelete: Attachment) {
 .attachment {
     position: relative;
     width: 100%;
-    height: 0px;
+    height: 0;
     padding-bottom: 64.5%;
     overflow: hidden;
     box-sizing: border-box;
@@ -240,23 +274,32 @@ function removeMedia(fileToDelete: Attachment) {
     object-position: center center;
 }
 
-.attachment>.remove-attachment {
+.attachment>.attachment-actions {
     position: absolute;
     top: 8px;
     right: 8px;
-    background-color: white;
-    border-radius: 50%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
-.attachment>.remove-attachment>.p-button {
+.attachment>.attachment-actions>div {
+    margin-left: 5px;
+}
+
+.attachment>.attachment-actions>div>.p-button {
+    background-color: white;
     width: 1.25rem;
     height: 1.25rem;
     padding: 0;
+    border-radius: 5px;
 }
-.attachment>.remove-attachment>.p-button>.p-button-icon {
+
+.attachment>.attachment-actions>div>.p-button>.p-button-icon {
     font-size: .625rem;
     font-weight: 600;
 }
+
 .p-image>img {
     width: 100%;
 }
@@ -316,5 +359,23 @@ function removeMedia(fileToDelete: Attachment) {
     padding: 0;
     width: 1.5rem;
     height: 1.5rem;
+}
+
+.media-edition {}
+
+.media-edition img {
+    margin-bottom: 0.5rem;
+    border-radius: 10px;
+    width: 100%;
+    height: auto;
+    max-height: 280px;
+    object-fit: cover;
+    object-position: center center;
+}
+
+.media-edition textarea {
+    width: 100%;
+    resize: none;
+    border: none;
 }
 </style>

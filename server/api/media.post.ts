@@ -62,8 +62,7 @@ function parseMultipartNodeRequest(req: IncomingMessage) {
                 return;
             }
             Promise.all(s3Uploads)
-                .then((data: any) => {
-                    console.log(data)
+                .then(() => {
                     const response = { ...fields, ...files }
                     resolve(response);
                 })
@@ -92,7 +91,8 @@ export default defineEventHandler(async (event: any) => {
             size: file.size,
             mimetype: file.mimetype,
             newFilename: file.fileObjectKey,
-            originalFilename: file.originalFilename
+            originalFilename: file.originalFilename,
+            description: ''
         }
     })
 

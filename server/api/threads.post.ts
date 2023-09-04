@@ -55,7 +55,7 @@ async function postMessageOnMastodon(message: Message, inReplyToId: string | nul
             const remoteFile = await fetch(file.location);
             const attachment = await mastodonClient.v2.media.create({
                 file: await remoteFile.blob(),
-                description: file.location,
+                description: file.description,
             });
             mediaIds.push(attachment.id)
         }
@@ -103,7 +103,7 @@ async function postMessageOnBluesky(message: Message, reply: ReplyRef | null): P
                 const mediaFile = await fetch(file.location);
                 const mediaData = await mediaFile.arrayBuffer();
                 const mediaResponse = await blueskyClient.uploadBlob(Buffer.from(mediaData), { encoding: file.mimetype });
-                embed.images.push({ image: mediaResponse.data.blob, alt: file.location })
+                embed.images.push({ image: mediaResponse.data.blob, alt: file.description })
             }
             record.embed = embed
         }
@@ -200,6 +200,7 @@ interface MessageAttachment {
     location: string;
     data: any;
     mimetype?: string;
+    description?: string
 }
 
 interface Message {
