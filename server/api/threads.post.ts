@@ -182,18 +182,30 @@ async function postMessagesOnTwitter(messages: Message[]): Promise<void> {
     }
 }
 
-async function postMessages(messages: Message[]): Promise<void> {
-    console.log('Publish messages on Bluesky')
-    await postMessagesOnBluesky(messages)
-    console.log('Messages published on Bluesky.')
+async function postMessages(messages: Message[]): Promise<string[]> {
+    const platforms: string[] = []
 
-     console.log('Publish messages on Mastodon…')
-    await postMessagesOnMastodon(messages)
-    console.log('Messages published on Mastodon.')
+    if (process.env.BLUESKY_ENABLED as string === 'true') {
+        console.log('Publish messages on Bluesky')
+        await postMessagesOnBluesky(messages)
+        platforms.push('Bluesky')
+        console.log('Messages published on Bluesky.')
+    }
 
-    console.log('Publish messages on Twitter…')
-    await postMessagesOnTwitter(messages)
-    console.log('Messages published on Twitter.')
+    if (process.env.MASTODON_ENABLED as string === 'true') {
+        console.log('Publish messages on Mastodon…')
+        await postMessagesOnMastodon(messages)
+        platforms.push('Mastodon')
+        console.log('Messages published on Mastodon.')
+    }
+
+    if (process.env.TWITTER_ENABLED as string === 'true') {
+        console.log('Publish messages on Twitter…')
+        await postMessagesOnTwitter(messages)
+        platforms.push('Twitter')
+        console.log('Messages published on Twitter.')
+    }
+    return platforms
 }
 
 interface MessageAttachment {
@@ -213,7 +225,15 @@ export default defineEventHandler(async (event) => {
     console.log('Publish thread…')
     console.log(body)
     await connectClients()
-    await postMessages(body.messages)
-    console.log('Thread published 🎉')
+    const platforms: string[] = await postMessages(body.messages)
+    let report = 'Thread published'
+    if (platforms.length === 1) {
+        report += ' on ' + platforms[0]
+    }
+    if (platforms.length > 1) {
+        const last = platforms.pop();
+        report += ' on ' + platforms.join(', ') + ' and ' + last;
+    }
+    console.log(`${report} 🎉 !`)
     return { body }
 })
