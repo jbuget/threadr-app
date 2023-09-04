@@ -46,11 +46,6 @@ function onUploadComplete(event: FileUploadUploadEvent) {
     toast.add({ severity: 'success', summary: 'Success', detail: `File(s) uploaded`, life: 3000 });
 }
 
-function onUploadedFileRemoved(event: FileUploadRemoveUploadedFile) {
-    const fileIndex = props.message.files.findIndex(file => file.filename === event.file.name)
-    props.message.files.splice(fileIndex, 1)
-}
-
 const messageAttachmentsStyle = computed(() => {
     if (props.message.files) {
         if (props.message.files.length === 2 || props.message.files.length === 4) {
@@ -63,23 +58,17 @@ const messageAttachmentsStyle = computed(() => {
     return { gridTemplateColumns: "1fr" }
 })
 
-/* function onFilesSelected(event: FileUploadSelectEvent) {
-    let selectedFileIndexesToRemove: number[] = [] // by reverse order
-    const selectedFiles = event.files
-    for (const selectedFile of selectedFiles) {
-        const alreadyUploadedFileIndex = props.message.files.findIndex((messageFile: any) => {
-            return (messageFile.filename === selectedFile.name) && (messageFile.size === selectedFile.size)
-        })
-        if (alreadyUploadedFileIndex >= 0) {
-            selectedFileIndexesToRemove.unshift(alreadyUploadedFileIndex)
-        }
+function removeMedia(fileToDelete: Attachment) {
+    const mediaIndex = props.message.files.findIndex(file => {
+        return file.filename === fileToDelete.filename
+            && file.size === fileToDelete.size
+            && file.mimetype === fileToDelete.mimetype
+    })
+    if (mediaIndex >= 0) {
+        props.message.files.splice(mediaIndex, 1)
     }
-    console.log(selectedFileIndexesToRemove.length)
-    selectedFileIndexesToRemove.forEach((index) => {
-        event.files.splice(index, 1)
-    });
 }
- */
+
 </script>
 
 <template>
@@ -92,12 +81,16 @@ const messageAttachmentsStyle = computed(() => {
         </div>
         <div class="message-attachments" :style="messageAttachmentsStyle">
             <div class="attachment" v-for="(file, index) in message.files">
-                <Image :src=file.location class="attachment-img" alt="Image" />
+                <Image class="attachment-img" :src=file.location alt="Image" />
+                <div class="remove-attachment">
+                    <Button icon="pi pi-times" size="small" text rounded outlined @enter="removeMedia(file)"
+                        @click="removeMedia(file)" severity="secondary" title="Remove media" />
+                </div>
             </div>
         </div>
         <div class="actions">
             <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
-            <div class="message-length">{{ message.text.length }}/280</div>
+            <div class="message-length"><span class="message-text-length">{{ message.text.length }}</span> / 280</div>
             <div class="message-index"><span>#{{ index + 1 }}</span></div>
             <div class="add-attachments">
                 <!-- Max file size: ~1Mb because of BlueSky (Masto = 8Mb) --->
@@ -150,6 +143,7 @@ const messageAttachmentsStyle = computed(() => {
     align-items: center;
     justify-content: flex-end;
     padding: 0;
+    color: #64748B;
 }
 
 .actions div {
@@ -201,21 +195,18 @@ const messageAttachmentsStyle = computed(() => {
     flex-direction: column;
 }
 
+.message-text {
+    margin-bottom: 0.5rem;
+}
+
 .message-text>textarea {
     resize: none;
     border: none;
-}
-
-.message-text>textarea {
     width: 100%;
 }
 
-.message-length {
-    color: gray;
-}
-
-.message-index {
-    color: gray;
+.message-text-length {
+    color: black;
 }
 
 .message-attachments {
@@ -225,6 +216,7 @@ const messageAttachmentsStyle = computed(() => {
     overflow: hidden;
     border-radius: 8px;
     background-color: whitesmoke;
+    margin-bottom: 0.5rem;
 }
 
 .attachment {
@@ -248,6 +240,23 @@ const messageAttachmentsStyle = computed(() => {
     object-position: center center;
 }
 
+.attachment>.remove-attachment {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: white;
+    border-radius: 50%;
+}
+
+.attachment>.remove-attachment>.p-button {
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+}
+.attachment>.remove-attachment>.p-button>.p-button-icon {
+    font-size: .625rem;
+    font-weight: 600;
+}
 .p-image>img {
     width: 100%;
 }
@@ -284,7 +293,7 @@ const messageAttachmentsStyle = computed(() => {
 }
 
 .p-button.p-fileupload-choose:active {
-    background-color: rgba(100, 116, 139, 0.16)!important;
+    background-color: rgba(100, 116, 139, 0.16) !important;
 }
 
 .p-button.p-fileupload-choose:hover {

@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <h1>Welcome to <strong>Threader</strong></h1>
+    <h1><strong>Threadr</strong></h1>
     <Editor/>
   </div>
 </template>
