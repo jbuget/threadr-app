@@ -165,3 +165,24 @@ The MinIO administration account username (used for docker-compose MinIO contain
 The MinIO administration account password (used for docker-compose MinIO container).
 
 </details>
+
+<details>
+<summary>Persisting data</summary>
+
+**`DATABASE_URL`: (PostgreSQL) URL**
+
+The PostgreSQL database URL
+
+**`POSTGRES_USER`: string**
+
+The PostgreSQL administration account username (used for docker-compose postgres container).
+
+**`POSTGRES_PASSWORD`: string**
+
+The PostgreSQL administration account password (used for docker-compose postgres container).
+
+**`POSTGRES_DB`: string**
+
+The PostgreSQL database.
+
+</details>
