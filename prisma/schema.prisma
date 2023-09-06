@@ -15,24 +15,13 @@ model Thread {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   published Boolean   @default(false)
-  messages  Message[]
+  versions  Version[]
 }
 
-model Message {
+model Version {
   id          Int          @id @default(autoincrement())
   createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  data        Json
   thread      Thread       @relation(fields: [threadId], references: [id])
   threadId    Int
-  attachments Attachment[]
-}
-
-model Attachment {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  location  String
-  alt       String?
-  message   Message  @relation(fields: [messageId], references: [id])
-  messageId Int
 }
