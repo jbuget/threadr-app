@@ -11,24 +11,24 @@ class Attachment {
     location!: string
     size!: number
     mimetype!: string
-    description?: string
+    alt?: string
 
-    constructor(filename: string, location: string, mimetype: string, size: number, description?: string) {
+    constructor(filename: string, location: string, mimetype: string, size: number, alt?: string) {
         this.filename = filename
         this.location = location
         this.mimetype = mimetype
         this.size = size
-        this.description = description
+        this.alt = alt
     }
 }
 
 class Message {
     text!: string;
-    files!: Attachment[];
+    attachments!: Attachment[];
 
     constructor(text: string) {
         this.text = text;
-        this.files = []
+        this.attachments = []
     }
 }
 
@@ -42,18 +42,18 @@ defineEmits(['add-message-below', 'remove-message'])
 function onUploadComplete(event: FileUploadUploadEvent) {
     const { files } = JSON.parse(event.xhr.response)
 
-    let attachments = files.map((file: any) => new Attachment(file.originalFilename, file.location, file.mimetype, file.size, file.description));
-    props.message.files.push(...attachments)
+    let attachments = files.map((file: any) => new Attachment(file.originalFilename, file.location, file.mimetype, file.size, file.alt));
+    props.message.attachments.push(...attachments)
 
     toast.add({ severity: 'success', summary: 'Success', detail: `File(s) uploaded`, life: 3000 });
 }
 
 const messageAttachmentsStyle = computed(() => {
-    if (props.message.files) {
-        if (props.message.files.length === 2 || props.message.files.length === 4) {
+    if (props.message.attachments) {
+        if (props.message.attachments.length === 2 || props.message.attachments.length === 4) {
             return { gridTemplateColumns: "1fr 1fr" }
         }
-        if (props.message.files.length === 3) {
+        if (props.message.attachments.length === 3) {
             return { gridTemplateColumns: "1fr 1fr 1fr" }
         }
     }
@@ -61,7 +61,7 @@ const messageAttachmentsStyle = computed(() => {
 })
 
 function removeMedia(index: number) {
-    props.message.files.splice(index, 1)
+    props.message.attachments.splice(index, 1)
 }
 
 const visible = ref(false)
@@ -73,9 +73,9 @@ const emptyFile: Attachment = {
 }
 const editingMedia = ref(emptyFile)
 
-function editMedia(file: Attachment) {
+function editMedia(attachment: Attachment) {
     visible.value = true
-    editingMedia.value = file
+    editingMedia.value = attachment
 }
 
 function updateMedia() {
@@ -98,12 +98,12 @@ function closeMediaEditionWithoutSave() {
             <Textarea v-model="message.text" placeholder="What's up?" rows="2" autoResize :unstyled="true"></Textarea>
         </div>
         <div class="message-attachments" :style="messageAttachmentsStyle">
-            <div class="attachment" v-for="(file, index) in message.files">
-                <Image class="attachment-img" :src=file.location alt="Image" />
+            <div class="attachment" v-for="(attachment, index) in message.attachments">
+                <Image class="attachment-img" :src=attachment.location alt="Image" />
                 <div class="attachment-actions">
                     <div class="edit-attachment">
-                        <Button icon="pi pi-pencil" size="small" text rounded outlined @enter="editMedia(file)"
-                            @click="editMedia(file)" severity="secondary" title="Edit description" />
+                        <Button icon="pi pi-pencil" size="small" text rounded outlined @enter="editMedia(attachment)"
+                            @click="editMedia(attachment)" severity="secondary" title="Edit alt" />
                     </div>
                     <div class="remove-attachment">
                         <Button icon="pi pi-times" size="small" text rounded outlined @enter="removeMedia(index)"
@@ -135,7 +135,7 @@ function closeMediaEditionWithoutSave() {
         <Dialog v-model:visible="visible" modal :header=editingMedia.filename :style="{ width: '50vw' }">
             <div class="media-edition">
                 <Image :src=editingMedia.location></Image>
-                <Textarea v-model="editingMedia.description" placeholder="What is the content of the media" rows="2" autoResize
+                <Textarea v-model="editingMedia.alt" placeholder="What is the content of the media" rows="2" autoResize
                     :unstyled="true"></Textarea>
             </div>
             <template #footer>
