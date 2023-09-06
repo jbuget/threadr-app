@@ -21,9 +21,7 @@ function removeMessage(index: number): void {
 }
 
 async function saveThread(): Promise<void> {
-    const thread = { messages }
-    console.log(thread)
-    await $fetch('/api/threads', { method: 'post', body: { thread } })
+    await $fetch('/api/threads', { method: 'post', body: { messages } })
     toast.add({ severity: 'success', summary: 'Thread saved', detail: `${messages.length} posts published`, life: 3000 });
 }
 
