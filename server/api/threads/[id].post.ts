@@ -1,6 +1,6 @@
-import { prisma } from '../../prisma/db'
+import { prisma } from '../../../prisma/db'
 
-type CreateThreadRequest = {
+type UpdateThreadRequest = {
     published: boolean
     messages: [{
         text: string,
@@ -14,15 +14,18 @@ type CreateThreadRequest = {
 }
 
 export default defineEventHandler(async (event: any) => {
-    const threadData: CreateThreadRequest = await readBody(event)
+    const threadId = parseInt(getRouterParam(event, 'id') || '')
+    const threadData: UpdateThreadRequest = await readBody(event)
     const now = new Date()
 
     const [thread] = await prisma.$transaction([
-        prisma.thread.create({
+        prisma.thread.update({
+            where: {
+                id: threadId
+            },
             data: {
-                createdAt: now,
                 updatedAt: now,
-                published: false,
+                published: threadData.published,
                 versions: {
                     create: [{
                         createdAt: now,
