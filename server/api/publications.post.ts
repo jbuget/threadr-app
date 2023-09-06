@@ -50,14 +50,14 @@ async function connectClients(): Promise<void> {
 
 async function postMessageOnMastodon(message: Message, inReplyToId: string | null): Promise<mastodon.v1.Status> {
     const mediaIds: string[] = []
-    if (message.files) {
-        for (const file of message.files) {
-            const remoteFile = await fetch(file.location);
-            const attachment = await mastodonClient.v2.media.create({
+    if (message.attachments) {
+        for (const attachment of message.attachments) {
+            const remoteFile = await fetch(attachment.location);
+            const media = await mastodonClient.v2.media.create({
                 file: await remoteFile.blob(),
-                description: file.description,
+                description: attachment.alt,
             });
-            mediaIds.push(attachment.id)
+            mediaIds.push(media.id)
         }
     }
 
@@ -93,17 +93,17 @@ async function postMessageOnBluesky(message: Message, reply: ReplyRef | null): P
         const record: any = {}
         record.text = message.text
 
-        if (message.files && message.files.length > 0) {
+        if (message.attachments && message.attachments.length > 0) {
             let embed: any
             embed = {
                 $type: 'app.bsky.embed.images',
                 images: []
             }
-            for (const file of message.files) {
+            for (const file of message.attachments) {
                 const mediaFile = await fetch(file.location);
                 const mediaData = await mediaFile.arrayBuffer();
                 const mediaResponse = await blueskyClient.uploadBlob(Buffer.from(mediaData), { encoding: file.mimetype });
-                embed.images.push({ image: mediaResponse.data.blob, alt: file.description })
+                embed.images.push({ image: mediaResponse.data.blob, alt: file.alt })
             }
             record.embed = embed
         }
@@ -152,9 +152,9 @@ async function postMessageOnTwitter(message: Message, reply: TweetV2PostTweetRes
         if (message.text) {
             tweet.text = message.text
         }
-        if (message.files && message.files.length > 0) {
+        if (message.attachments && message.attachments.length > 0) {
             const mediaIds = []
-            for (const file of message.files) {
+            for (const file of message.attachments) {
                 const mediaResponse = await fetch(file.location);
                 const mediaData = await mediaResponse.arrayBuffer();
                 const mediaId = await twitterClient.v1.uploadMedia(Buffer.from(mediaData), { mimeType: file.mimetype })
@@ -212,12 +212,12 @@ interface MessageAttachment {
     location: string;
     data: any;
     mimetype?: string;
-    description?: string
+    alt?: string
 }
 
 interface Message {
     text: string;
-    files?: MessageAttachment[];
+    attachments?: MessageAttachment[];
 }
 
 export default defineEventHandler(async (event) => {
