@@ -1,59 +1,36 @@
 <script setup lang="ts">
 import { FileUploadUploadEvent } from "primevue/fileupload";
 import { useToast } from "primevue/usetoast";
+import { Attachment as AttachmentModel, Message as MessageModel } from "~/models/models";
 
 const config = useRuntimeConfig()
 
 const toast = useToast();
 
-class Attachment {
-    filename!: string
-    location!: string
-    size!: number
-    mimetype!: string
-    alt?: string
-
-    constructor(filename: string, location: string, mimetype: string, size: number, alt?: string) {
-        this.filename = filename
-        this.location = location
-        this.mimetype = mimetype
-        this.size = size
-        this.alt = alt
-    }
-}
-
-class Message {
-    text!: string;
-    attachments!: Attachment[];
-
-    constructor(text: string) {
-        this.text = text;
-        this.attachments = []
-    }
-}
-
 const props = defineProps<{
     index: number,
-    message: Message
+    message: MessageModel
 }>()
+
+const message:any = ref(props.message)
 
 defineEmits(['add-message-below', 'remove-message'])
 
 function onUploadComplete(event: FileUploadUploadEvent) {
     const { files } = JSON.parse(event.xhr.response)
 
-    let attachments = files.map((file: any) => new Attachment(file.originalFilename, file.location, file.mimetype, file.size, file.alt));
-    props.message.attachments.push(...attachments)
+    let attachments = files.map((file: any) => new AttachmentModel(file.originalFilename, file.location, file.mimetype, file.size, file.alt));
+    message.attachments.push(...attachments)
 
     toast.add({ severity: 'success', summary: 'Success', detail: `File(s) uploaded`, life: 3000 });
 }
 
 const messageAttachmentsStyle = computed(() => {
-    if (props.message.attachments) {
-        if (props.message.attachments.length === 2 || props.message.attachments.length === 4) {
+    if (message.attachments) {
+        if (message.attachments.length === 2 || message.attachments.length === 4) {
             return { gridTemplateColumns: "1fr 1fr" }
         }
-        if (props.message.attachments.length === 3) {
+        if (message.attachments.length === 3) {
             return { gridTemplateColumns: "1fr 1fr 1fr" }
         }
     }
@@ -61,11 +38,11 @@ const messageAttachmentsStyle = computed(() => {
 })
 
 function removeMedia(index: number) {
-    props.message.attachments.splice(index, 1)
+    message.attachments.splice(index, 1)
 }
 
 const visible = ref(false)
-const emptyFile: Attachment = {
+const emptyFile: AttachmentModel = {
     filename: "",
     location: "",
     size: 0,
@@ -73,7 +50,7 @@ const emptyFile: Attachment = {
 }
 const editingMedia = ref(emptyFile)
 
-function editMedia(attachment: Attachment) {
+function editMedia(attachment: AttachmentModel) {
     visible.value = true
     editingMedia.value = attachment
 }

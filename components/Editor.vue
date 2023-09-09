@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
+import { Attachment as AttachmentModel, Message as MessageModel, Thread as ThreadModel } from "~/models/models";
+import Message from "./Message.vue";
 
 const toast = useToast();
 
-const messages = reactive([{
-    text: '',
-    attachments: []
-}])
+const messages = reactive([new MessageModel('')])
 
 function addMessageBelow(index: number): void {
-    const newMessage = { text: '', attachments: [] }
+    const newMessage = new MessageModel('')
     messages.splice(index, 0, newMessage);
 }
 
@@ -31,25 +30,63 @@ async function publishThread(): Promise<void> {
     toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
 }
 
+const props = defineProps<{
+    threadId: number
+}>()
+
+const threadId = ref(props.threadId);
+
+const { data: threadData } = await useAsyncData(
+    'threadData',
+    () => $fetch(`/api/threads/${threadId.value}`, {
+    }), {
+    transform: (input: any) => {
+        const thread = new ThreadModel(input.id, input.latest.data.messages.map((message: any) => (
+            new MessageModel(
+                message.text,
+                message.attachments.map((attachment: any) => (
+                    new AttachmentModel(
+                        attachment.filename,
+                        attachment.location,
+                        attachment.mimetype,
+                        attachment.size,
+                        attachment.alt
+                    )))
+            )
+        )))
+        return JSON.parse(JSON.stringify(thread))
+    },
+    watch: [threadId]
+})
+
+const thread: any = ref(threadData)
 </script>
 
 <template>
     <div class="editor">
         <Toast />
-        <div class="messages">
-            <div class="message" v-for="(message, index) in messages">
-                <Message :index=index :message=message @addMessageBelow="addMessageBelow(index + 1)" @removeMessage="removeMessage(index)"/>
-            </div>
-            <Divider />
-            <div>
-                <div class="save">
-                <Button label="Save" icon="pi pi-save" severity="info" size="small" @click="saveThread" />
-            </div>
-            <div class="publish">
-                <Button label="Publish" icon="pi pi-send" severity="success" size="small" @click="publishThread" />
-            </div>
+        <!-- you will need to handle a loading state -->
+        <div v-if="thread">
+            <div class="messages">
+                <div class="message" v-for="(message, index) in thread.messages">
+                    <Message :index=index :message=message @addMessageBelow="addMessageBelow(index + 1)"
+                        @removeMessage="removeMessage(index)" />
+                </div>
+                <Divider />
+                <div>
+                    <div class="save">
+                        <Button label="Save" icon="pi pi-save" severity="info" size="small" @click="saveThread" />
+                    </div>
+                    <div class="publish">
+                        <Button label="Publish" icon="pi pi-send" severity="success" size="small" @click="publishThread" />
+                    </div>
+                </div>
             </div>
         </div>
+        <div v-else>
+            Loading...
+        </div>
+
     </div>
 </template>
 
@@ -59,5 +96,4 @@ async function publishThread(): Promise<void> {
     display: flex;
     flex-direction: column;
 }
-
 </style>

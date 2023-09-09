@@ -9,7 +9,6 @@ export default defineEventHandler(async () => {
     const result = threads.map(thread => {
         const [latest] = thread.versions.slice(-1)
         const latestThreadData: any = latest.data
-        console.log('', latestThreadData)
         return {
             id: thread.id,
             createdAt: thread.createdAt,
