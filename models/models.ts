@@ -1,57 +1,26 @@
-export class Attachment {
-    filename!: string
-    location!: string
-    size!: number
-    mimetype!: string
-    alt?: string
-
-    constructor(filename: string, location: string, mimetype: string, size: number, alt?: string) {
-        this.filename = filename
-        this.location = location
-        this.mimetype = mimetype
-        this.size = size
-        this.alt = alt
-    }
+export interface Attachment {
+  location: string
+  filename: string
+  size: number
+  mimetype: string
+  alt?: string
 }
 
-export class Message {
-    text!: string;
-    attachments!: Attachment[];
-
-    constructor(text: string, attachements?: Attachment[]) {
-        this.text = text;
-        if (attachements) {
-            this.attachments = attachements
-        } else {
-            this.attachments = []
-        }
-    }
+export interface Message {
+  text: string;
+  attachments: Attachment[];
 }
 
-export class Thread {
+
+export interface Thread {
   id?: number
   messages?: Message[]
-
-  constructor(id?: number, messages?: Message[]) {
-    if (id) {
-        this.id = id
-    }
-    if (messages) {
-        this.messages = messages
-    } else {
-        this.messages = []
-    }
-  }
 }
-export class ThreadSummmary {
+export interface ThreadSummary {
   id?: number
   createdAt?: Date
   updatedAt?: Date
-  published: boolean = false
-  nbMesssages: number = 0
-  messages?: Message[]
-
-  constructor() {
-    this.messages = []
-  }
+  published: boolean
+  nbMesssages: number
 }
+
