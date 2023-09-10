@@ -3,39 +3,84 @@ import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
 
+/* Model */
+
+const props = defineProps<{
+    threadId: number | null
+}>()
+
+const { data } = await useAsyncData(
+  'threads', 
+  async () => {
+    let thread
+    if (props.threadId) {
+      const threadData = await $fetch(`/api/threads/${props.threadId}`, {})
+      thread = {
+        id: threadData.id,
+        messages: threadData.latest.data.messages.map((message: any) => {
+          const result = {
+            text: message.text,
+            attachments: message.attachments.map((attachment: any) => {
+              const result = {
+                filename: attachment.filename,
+                location: attachment.location,
+                mimetype: attachment.mimetype,
+                size: attachment.size,
+                alt: attachment.alt
+              }
+              return result
+            })
+          }
+          return result
+        })
+      }
+    } else {
+      thread = {
+        messages: [{
+          text: '',
+          attachments: []
+        }]
+      }
+    }
+    return { thread }
+  }, {
+    watch: [props]
+  }
+)
+
+const thread: any = ref(data)
+
+/* Controller */
+
 function addMessageBelow(index: number): void {
-    if (props.thread.messages) {
-        props.thread.messages.splice(index, 0, { text: '', attachments: [] });
+    if (thread.messages) {
+        thread.messages.splice(index, 0, { text: '', attachments: [] });
     }
 }
 
 function removeMessage(index: number): void {
-    if (props.thread.messages) {
-        props.thread.messages.splice(index, 1);
-        if (props.thread.messages.length === 0) {
+    if (thread.messages) {
+        thread.messages.splice(index, 1);
+        if (thread.messages.length === 0) {
             addMessageBelow(0)
         }
     }
 }
 
 async function saveThread(): Promise<void> {
-    if (props.thread.messages) {
-        await $fetch('/api/threads', { method: 'post', body: { messages: props.thread.messages } })
-        toast.add({ severity: 'success', summary: 'Thread saved', detail: `${props.thread.messages.length} posts published`, life: 3000 });
+    if (thread.messages) {
+        await $fetch('/api/threads', { method: 'post', body: { messages: thread.messages } })
+        toast.add({ severity: 'success', summary: 'Thread saved', detail: `${thread.messages.length} posts published`, life: 3000 });
     }
 }
 
 async function publishThread(): Promise<void> {
-    if (props.thread.messages) {
-        const nonEmptyMessages = props.thread.messages.filter((message: any) => message.text.trim().length > 0 || message.attachments.length > 0)
+    if (thread.messages) {
+        const nonEmptyMessages = thread.messages.filter((message: any) => message.text.trim().length > 0 || message.attachments.length > 0)
         await $fetch('/api/publications', { method: 'post', body: { messages: nonEmptyMessages } })
         toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
     }
 }
-
-const props = defineProps<{
-    thread: any
-}>()
 
 </script>
 
@@ -44,6 +89,7 @@ const props = defineProps<{
         <Toast />
         <!-- you will need to handle a loading state -->
         <div v-if="thread">
+            <p>{{ thread }}</p>
             <h2>ID: {{ thread.id }}</h2>
             <div class="messages">
                 <div class="message" v-for="(message, index) in thread.messages">
