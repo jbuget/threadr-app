@@ -104,8 +104,19 @@ async function publishThread(): Promise<void> {
   <div class="editor">
     <Toast />
     <!-- you will need to handle a loading state -->
-    <div v-if="!pending && thread">
-      <h2>ID: {{ thread.id }}</h2>
+    <div class="editor-content" v-if="!pending && thread">
+      <div class="thread-header">
+        <h2 class="thread-title">ID: {{ thread.id }}</h2>
+        <div class="thread-actions">
+          <div class="save">
+            <Button label="Save" icon="pi pi-save" severity="info" size="small" @click="saveThread" />
+          </div>
+          <div class="publish">
+            <Button label="Publish" icon="pi pi-send" severity="success" size="small" @click="publishThread" />
+          </div>
+        </div>
+      </div>
+
       <div class="messages">
         <template v-for="(message, index) in thread.messages" :key="updateKey">
           <div class="message-wrapper">
@@ -114,16 +125,6 @@ async function publishThread(): Promise<void> {
           </div>
         </template>
       </div>
-      <Divider />
-      <div class="thread-actions">
-        <div class="save">
-          <Button label="Save" icon="pi pi-save" severity="info" size="small" @click="saveThread" />
-        </div>
-        <div class="publish">
-          <Button label="Publish" icon="pi pi-send" severity="success" size="small" @click="publishThread" />
-        </div>
-      </div>
-      <p>{{ thread }}</p>
     </div>
     <div v-else>
       Loading...
@@ -132,17 +133,46 @@ async function publishThread(): Promise<void> {
   </div>
 </template>
 
-<style>
-.messages {
-  margin: 40px auto;
+<style scoped>
+.editor {
   display: flex;
   flex-direction: column;
+  width: 500px;
+}
+
+.editor-content {
+  position: relative;
+  width: 100%;
+}
+
+.thread-header {
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid lightgray;
+  top: 0;
+  background-color: white;
+  z-index: 9999;
+  width: 500px;
+}
+
+.thread-title {
+  display: block;
+  flex-grow: 1;
+}
+
+.messages {
+  margin: 74px auto 40px;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 0;
 }
 
 .thread-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  padding: 1rem 0;
 }
 
 .thread-actions button {
