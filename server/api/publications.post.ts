@@ -221,6 +221,8 @@ interface Message {
 }
 
 export default defineEventHandler(async (event) => {
+    console.log(`POST /api/publications`)
+
     const body = await readBody(event)
     console.log('Publish thread…')
     console.log(body)

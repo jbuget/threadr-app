@@ -14,6 +14,8 @@ type CreateThreadRequest = {
 }
 
 export default defineEventHandler(async (event: any) => {
+    console.log(`GET /api/threads`)
+
     const threadData: CreateThreadRequest = await readBody(event)
     const now = new Date()
 

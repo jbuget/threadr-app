@@ -15,6 +15,9 @@ type UpdateThreadRequest = {
 
 export default defineEventHandler(async (event: any) => {
     const threadId = parseInt(getRouterParam(event, 'id') || '')
+
+    console.log(`POST /api/threads/${threadId}`)
+
     const threadData: UpdateThreadRequest = await readBody(event)
     const now = new Date()
 
