@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
-
+import { Thread} from '~/models/models'
 const toast = useToast();
 
 /* Model */
@@ -9,8 +9,8 @@ const props = defineProps<{
     threadId: number | null
 }>()
 
-const { data } = await useAsyncData(
-  'threads', 
+const { data, pending } = await useAsyncData(
+  'thread', 
   async () => {
     let thread
     if (props.threadId) {
@@ -42,7 +42,7 @@ const { data } = await useAsyncData(
         }]
       }
     }
-    return { thread }
+    return thread
   }, {
     watch: [props]
   }
@@ -88,8 +88,7 @@ async function publishThread(): Promise<void> {
     <div class="editor">
         <Toast />
         <!-- you will need to handle a loading state -->
-        <div v-if="thread">
-            <p>{{ thread }}</p>
+        <div v-if="!pending">
             <h2>ID: {{ thread.id }}</h2>
             <div class="messages">
                 <div class="message" v-for="(message, index) in thread.messages">
@@ -106,6 +105,7 @@ async function publishThread(): Promise<void> {
                     </div>
                 </div>
             </div>
+            <p>{{ thread }}</p>
         </div>
         <div v-else>
             Loading...
