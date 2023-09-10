@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import { useToast } from "primevue/usetoast";
-import { Thread } from "~/models/models";
+import { useToast } from 'primevue/usetoast'
+import { Thread } from '~/models/models'
+import { generateUniqueKey } from '~/utils/utils'
 const toast = useToast();
 
 /* Model */
-
-function generateUniqueKey(prefix: string, suffix?: string | number) {
-  return `${prefix}_${Date.now()}_${suffix}`
-}
 
 const updateKey = ref(generateUniqueKey('message-list'))
 
 const props = defineProps<{
   threadId: number | null
 }>()
+
+const emit = defineEmits(['thread-saved'])
 
 const { data: thread, pending } = await useAsyncData(
   'thread',
@@ -73,15 +72,26 @@ function removeMessage(index: number): void {
   updateKey.value = generateUniqueKey('message-list')
 }
 
+async function doSaveThread(thread: Thread): Promise<number> {
+  let url = '/api/threads'
+  if (thread.id) {
+    url += `/${thread.id}`
+  }
+  const response: any = await $fetch(url, { method: 'post', body: { messages: thread.messages } })
+  emit('thread-saved')
+  return response.id as number
+}
+
 async function saveThread(): Promise<void> {
   if (thread.value && thread.value.messages) {
-    await $fetch('/api/threads', { method: 'post', body: { messages: thread.value.messages } })
-    toast.add({ severity: 'success', summary: 'Thread saved', detail: `${thread.value.messages.length} posts published`, life: 3000 });
+    thread.value.id = await doSaveThread(thread.value)
+    toast.add({ severity: 'success', summary: 'Thread saved', detail: `${thread.value.messages.length} posts saved`, life: 3000 });
   }
 }
 
 async function publishThread(): Promise<void> {
   if (thread.value && thread.value.messages) {
+    thread.value.id = await doSaveThread(thread.value)
     const nonEmptyMessages = thread.value.messages.filter((message: any) => message.text.trim().length > 0 || message.attachments.length > 0)
     await $fetch('/api/publications', { method: 'post', body: { messages: nonEmptyMessages } })
     toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });

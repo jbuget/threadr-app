@@ -1,23 +1,31 @@
 <script setup lang="ts">
+import { generateUniqueKey } from './utils/utils';
+
 const threadId: any = ref(null)
+const threadSummaryListKey = ref(generateUniqueKey('thread-summary-list'))
 
 async function loadThread(selectedTreadId: number) {
   threadId.value = selectedTreadId
   console.log('Selected thread with ID ', threadId.value)
 }
+
+async function refreshThreadList() {
+  threadSummaryListKey.value = generateUniqueKey('thread-summary-list')
+}
+
 </script>
 
 <template>
   <div class="app">
     <div class="layout-container">
-      
+
       <div class="layout-sidebar">
-        <ThreadSummaryList @threadSelected="loadThread" />
+        <ThreadSummaryList @threadSelected="loadThread" :key="threadSummaryListKey" />
       </div>
-      
+
       <div class="layout-content-wrapper">
         <div class="layout-content-main">
-          <ThreadEditor :threadId="threadId" />
+          <ThreadEditor :threadId="threadId" @threadSaved="refreshThreadList" />
         </div>
       </div>
     </div>
@@ -40,6 +48,8 @@ async function loadThread(selectedTreadId: number) {
   left: 0;
   width: 18rem;
   max-width: 18rem;
+  overflow-y: auto;
+  border: 1px solid lightblue;
 }
 
 .layout-content-wrapper {
