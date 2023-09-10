@@ -1,6 +1,8 @@
 import { prisma } from '../../prisma/db'
 
 export default defineEventHandler(async () => {
+    console.log(`GET /api/threads`)
+
     const threads = await prisma.thread.findMany({
         include: {
             versions: true
@@ -17,6 +19,5 @@ export default defineEventHandler(async () => {
             nbMessages: latestThreadData.messages.length
         }
     })
-    console.log(result)
     return result;
 })

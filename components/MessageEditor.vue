@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FileUploadUploadEvent } from "primevue/fileupload";
 import { useToast } from "primevue/usetoast";
-import { Attachment as AttachmentModel, Message as MessageModel } from "~/models/models";
+import { Attachment, Message } from "~/models/models";
 
 const config = useRuntimeConfig()
 
@@ -9,17 +9,23 @@ const toast = useToast();
 
 const props = defineProps<{
     index: number,
-    message: MessageModel
+    message: any
 }>()
 
-const message:any = ref(props.message)
+const message: any = reactive(props.message)
 
 defineEmits(['add-message-below', 'remove-message'])
 
 function onUploadComplete(event: FileUploadUploadEvent) {
     const { files } = JSON.parse(event.xhr.response)
 
-    let attachments = files.map((file: any) => new AttachmentModel(file.originalFilename, file.location, file.mimetype, file.size, file.alt));
+    let attachments = files.map((file: any) => ({
+        originalFilename: file.originalFilename,
+        location: file.location,
+        mimetype: file.mimetype,
+        size: file.size,
+        al: file.alt,
+    }));
     message.attachments.push(...attachments)
 
     toast.add({ severity: 'success', summary: 'Success', detail: `File(s) uploaded`, life: 3000 });
@@ -42,7 +48,7 @@ function removeMedia(index: number) {
 }
 
 const visible = ref(false)
-const emptyFile: AttachmentModel = {
+const emptyFile: Attachment = {
     filename: "",
     location: "",
     size: 0,
@@ -50,7 +56,7 @@ const emptyFile: AttachmentModel = {
 }
 const editingMedia = ref(emptyFile)
 
-function editMedia(attachment: AttachmentModel) {
+function editMedia(attachment: Attachment) {
     visible.value = true
     editingMedia.value = attachment
 }
@@ -116,7 +122,8 @@ function closeMediaEditionWithoutSave() {
                     :unstyled="true"></Textarea>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" @enter="closeMediaEditionWithoutSave()" @click="closeMediaEditionWithoutSave()" text />
+                <Button label="No" icon="pi pi-times" @enter="closeMediaEditionWithoutSave()"
+                    @click="closeMediaEditionWithoutSave()" text />
                 <Button label="Yes" icon="pi pi-check" @enter="updateMedia()" @click="updateMedia()" autofocus />
             </template>
         </Dialog>
