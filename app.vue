@@ -5,7 +5,6 @@ async function loadThread(selectedTreadId: number) {
   threadId.value = selectedTreadId
   console.log('Selected thread with ID ', threadId.value)
 }
-
 </script>
 
 <template>
