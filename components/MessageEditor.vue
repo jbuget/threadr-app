@@ -12,7 +12,7 @@ const props = defineProps<{
     message: any
 }>()
 
-const message: any = reactive(props.message)
+const message: any = ref(props.message)
 
 defineEmits(['add-message-below', 'remove-message'])
 
@@ -26,17 +26,17 @@ function onUploadComplete(event: FileUploadUploadEvent) {
         size: file.size,
         al: file.alt,
     }));
-    message.attachments.push(...attachments)
+    message.value.attachments.push(...attachments)
 
     toast.add({ severity: 'success', summary: 'Success', detail: `File(s) uploaded`, life: 3000 });
 }
 
 const messageAttachmentsStyle = computed(() => {
-    if (message.attachments) {
-        if (message.attachments.length === 2 || message.attachments.length === 4) {
+    if (message.value.attachments) {
+        if (message.value.attachments.length === 2 || message.value.attachments.length === 4) {
             return { gridTemplateColumns: "1fr 1fr" }
         }
-        if (message.attachments.length === 3) {
+        if (message.value.attachments.length === 3) {
             return { gridTemplateColumns: "1fr 1fr 1fr" }
         }
     }
@@ -44,15 +44,15 @@ const messageAttachmentsStyle = computed(() => {
 })
 
 function removeMedia(index: number) {
-    message.attachments.splice(index, 1)
+    message.value.attachments.splice(index, 1)
 }
 
 const visible = ref(false)
 const emptyFile: Attachment = {
-    filename: "",
-    location: "",
+    filename: '',
+    location: '',
     size: 0,
-    mimetype: ""
+    mimetype: ''
 }
 const editingMedia = ref(emptyFile)
 
