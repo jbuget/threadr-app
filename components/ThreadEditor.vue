@@ -5,7 +5,11 @@ const toast = useToast();
 
 /* Model */
 
-const updateKey = ref(1)
+function generateUniqueKey(prefix: string, suffix?: string | number) {
+  return `${prefix}_${Date.now()}_${suffix}`
+}
+
+const updateKey = ref(generateUniqueKey('message-list'))
 
 const props = defineProps<{
   threadId: number | null
@@ -56,7 +60,7 @@ function addMessageBelow(index: number): void {
   if (thread.value && thread.value.messages) {
     thread.value.messages.splice(index, 0, { text: '', attachments: [] });
   }
-  updateKey.value++
+  updateKey.value = generateUniqueKey('message-list')
 }
 
 function removeMessage(index: number): void {
@@ -66,7 +70,7 @@ function removeMessage(index: number): void {
       addMessageBelow(0)
     }
   }
-  updateKey.value++
+  updateKey.value = generateUniqueKey('message-list')
 }
 
 async function saveThread(): Promise<void> {
@@ -94,20 +98,20 @@ async function publishThread(): Promise<void> {
       <h2>ID: {{ thread.id }}</h2>
       <div class="messages">
         <template v-for="(message, index) in thread.messages" :key="updateKey">
-          <div class="message">
+          <div class="message-wrapper">
             <MessageEditor :index="index" :message="message" @addMessageBelow="addMessageBelow(index + 1)"
               @removeMessage="removeMessage(index)" />
           </div>
-          <Divider />
-          <div class="actions">
-            <div class="save">
-              <Button label="Save" icon="pi pi-save" severity="info" size="small" @click="saveThread" />
-            </div>
-            <div class="publish">
-              <Button label="Publish" icon="pi pi-send" severity="success" size="small" @click="publishThread" />
-            </div>
-          </div>
         </template>
+      </div>
+      <Divider />
+      <div class="thread-actions">
+        <div class="save">
+          <Button label="Save" icon="pi pi-save" severity="info" size="small" @click="saveThread" />
+        </div>
+        <div class="publish">
+          <Button label="Publish" icon="pi pi-send" severity="success" size="small" @click="publishThread" />
+        </div>
       </div>
       <p>{{ thread }}</p>
     </div>
@@ -125,8 +129,13 @@ async function publishThread(): Promise<void> {
   flex-direction: column;
 }
 
-.actions {
+.thread-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+}
+
+.thread-actions button {
+  margin-left: 0.5rem;
 }
 </style>
