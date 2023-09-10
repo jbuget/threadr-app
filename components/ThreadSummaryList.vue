@@ -27,8 +27,10 @@ const emit = defineEmits<{
 <template>
     <div class="threads" v-if="threads">
         <div class="thread" v-for="(thread) in threads" @click="selectThread(thread.id)">
+            <span class="pi pi-comment" />
             <span class="thread-title">Thread #{{ thread.id }}</span>
-            <span class="thread-meta">{{ thread.createdAt }}</span>
+            <!--<span class="thread-meta">{{ thread.createdAt }}</span>-->
+            <span class="thread-nb-messages"> [{{ thread.nbMessages }} messages]</span>
         </div>
     </div>
     <div v-else>
@@ -43,14 +45,15 @@ const emit = defineEmits<{
 
 .thread {
     cursor: pointer;
-    padding: 1rem;
+    padding: 0.5rem;
     margin-bottom: 15px;
     border: 1px solid lightblue;
     overflow: hidden;
 }
 
 .thread-title {
-    display: block;
+    display: inline-block;
+    margin-left: 0.5rem;
 }
 .thread-meta {
     display: block;
