@@ -38,7 +38,7 @@ const emit = defineEmits<{
     </div>
 </template>
 
-<style>
+<style scoped>
 .threads {
     padding: 0.5rem;
 }
@@ -47,7 +47,7 @@ const emit = defineEmits<{
     cursor: pointer;
     padding: 0.5rem;
     margin-bottom: 15px;
-    border: 1px solid lightblue;
+    border: 1px solid lightgray;
     overflow: hidden;
 }
 
@@ -55,6 +55,7 @@ const emit = defineEmits<{
     display: inline-block;
     margin-left: 0.5rem;
 }
+
 .thread-meta {
     display: block;
 }

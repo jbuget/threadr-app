@@ -32,7 +32,7 @@ async function refreshThreadList() {
   </div>
 </template>
 
-<style>
+<style scoped>
 .app {}
 
 .layout-container {
@@ -49,7 +49,7 @@ async function refreshThreadList() {
   width: 18rem;
   max-width: 18rem;
   overflow-y: auto;
-  border: 1px solid lightblue;
+  border: 1px solid lightgray;
 }
 
 .layout-content-wrapper {
@@ -60,7 +60,6 @@ async function refreshThreadList() {
 }
 
 .layout-content-main {
-  width: 500px;
   margin: 0 auto;
 }
 </style>
