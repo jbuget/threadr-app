@@ -1,4 +1,7 @@
 <script setup lang="ts">
+const emit = defineEmits<{
+    threadSelected: [id: number]
+}>()
 
 const selectThread = (threadId: number) => {
     console.log(`Clicked item ${threadId}`)
@@ -18,10 +21,6 @@ const { data: threads } = await useFetch(
         return threads
     }
 })
-
-const emit = defineEmits<{
-    threadSelected: [id: number]
-}>()
 </script>
 
 <template>
@@ -29,8 +28,9 @@ const emit = defineEmits<{
         <div class="thread" v-for="(thread) in threads" @click="selectThread(thread.id)">
             <span class="pi pi-comment" />
             <span class="thread-title">Thread #{{ thread.id }}</span>
+            <span> - </span>
             <!--<span class="thread-meta">{{ thread.createdAt }}</span>-->
-            <span class="thread-nb-messages"> [{{ thread.nbMessages }} messages]</span>
+            <span class="thread-nb-messages">{{ thread.nbMessages }} messages</span>
         </div>
     </div>
     <div v-else>
@@ -46,9 +46,12 @@ const emit = defineEmits<{
 .thread {
     cursor: pointer;
     padding: 0.5rem;
-    margin-bottom: 15px;
-    border: 1px solid lightgray;
     overflow: hidden;
+    border-radius: 5px;
+}
+.thread:hover,
+.thread:focus {
+    background-color: rgba(100, 116, 139, 0.04);
 }
 
 .thread-title {
@@ -58,5 +61,10 @@ const emit = defineEmits<{
 
 .thread-meta {
     display: block;
+}
+
+.thread-nb-messages {
+    font-size: 0.8rem;
+    color: grey;
 }
 </style>
