@@ -1,4 +1,4 @@
-import { prisma } from '../../../../prisma/db'
+import { prisma } from '../../../prisma/db'
 
 type UpdateThreadRequest = {
     published: boolean
@@ -14,8 +14,8 @@ type UpdateThreadRequest = {
 }
 
 export default defineEventHandler(async (event: any) => {
-    const threadId = parseInt(getRouterParam(event, 'id') || '')
-
+    const threadId = parseInt(event.context.params.id) as number
+    
     console.log(`POST /api/threads/${threadId}`)
 
     const threadData: UpdateThreadRequest = await readBody(event)

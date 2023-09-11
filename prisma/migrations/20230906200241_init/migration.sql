@@ -19,4 +19,4 @@ CREATE TABLE "Version" (
 );
 
 -- AddForeignKey
-ALTER TABLE "Version" ADD CONSTRAINT "Version_threadId_fkey" FOREIGN KEY ("threadId") REFERENCES "Thread"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Version" ADD CONSTRAINT "Version_threadId_fkey" FOREIGN KEY ("threadId") REFERENCES "Thread"("id") ON DELETE CASCADE ON UPDATE CASCADE;

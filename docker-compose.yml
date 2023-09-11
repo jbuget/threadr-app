@@ -1,15 +1,6 @@
 version: "3"
 
 services:
-  threadr-app:
-    build:
-      context: .
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    depends_on:
-      - minio
 
   minio:
     image: minio/minio

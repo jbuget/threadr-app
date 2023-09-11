@@ -1,7 +1,9 @@
-export default defineEventHandler(async (event: any) => {
-    const threadId = parseInt(getRouterParam(event, 'id') || '')
+import { prisma } from '../../../../prisma/db'
 
-    console.log(`POST /api/threads/${threadId}/publication`)
+export default defineEventHandler(async (event: any) => {
+    const id = parseInt(event.context.params.id) as number
+
+    console.log(`POST /api/threads/${id}/publication`)
 
     return 'ok'
 })

@@ -12,14 +12,14 @@ const props = defineProps<{
   threadId: number | null
 }>()
 
-const emit = defineEmits(['thread-saved'])
+const emit = defineEmits(['thread-saved', 'thread-deleted'])
 
 const { data: thread, pending } = await useAsyncData(
   'thread',
   async () => {
     let thread: Thread
     if (props.threadId) {
-      const threadData = await $fetch(`/api/threads/${props.threadId}`, {})
+      const threadData:any = await $fetch(`/api/threads/${props.threadId}`)
       thread = {
         id: threadData.id,
         messages: threadData.latest.data.messages.map((message: any) => {
@@ -79,8 +79,10 @@ async function doSaveThread(thread: Thread): Promise<number> {
   }
   const response: any = await $fetch(url, { method: 'post', body: { messages: thread.messages } })
   emit('thread-saved')
+  updateKey.value = generateUniqueKey('message-list')
   return response.id as number
 }
+
 
 async function saveThread(): Promise<void> {
   if (thread.value && thread.value.messages) {
@@ -96,6 +98,22 @@ async function publishThread(): Promise<void> {
     await $fetch(`/api/threads/${thread.value.id}/publication`, { method: 'post', body: { messages: nonEmptyMessages } })
     toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
   }
+}
+
+async function deleteThread(): Promise<void> {
+  if (thread.value && thread.value.id) {
+    const url = `/api/threads/${thread.value.id}`
+    await $fetch(url, { method: 'delete' })
+    emit('thread-deleted')
+    toast.add({ severity: 'success', summary: 'Thread deleted', detail: `Removed thread ${thread.value.id} and its messages`, life: 3000 });
+  }
+  thread.value = {
+    messages: [{
+      text: '',
+      attachments: []
+    }]
+  }
+  updateKey.value = generateUniqueKey('message-list')
 }
 
 </script>
@@ -114,11 +132,14 @@ async function publishThread(): Promise<void> {
           <div class="publish">
             <Button label="Publish" icon="pi pi-send" severity="success" size="small" @click="publishThread" />
           </div>
+          <div class="delete">
+            <Button label="Delete" icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" />
+          </div>
         </div>
       </div>
 
-      <div class="messages">
-        <template v-for="(message, index) in thread.messages" :key="updateKey">
+      <div class="messages" :key="updateKey">
+        <template v-for="(message, index) in thread.messages" >
           <div class="message-wrapper">
             <MessageEditor :index="index" :message="message" @addMessageBelow="addMessageBelow(index + 1)"
               @removeMessage="removeMessage(index)" />
