@@ -1,7 +1,7 @@
-import { prisma } from '../../../../prisma/db'
+import { prisma } from '../../../prisma/db'
 
 export default defineEventHandler(async (event: any) => {
-    const threadId = parseInt(getRouterParam(event, 'id') || '')
+    const threadId = parseInt(event.context.params.id) as number
 
     console.log(`GET /api/threads/${threadId}`)
 
@@ -18,6 +18,6 @@ export default defineEventHandler(async (event: any) => {
         const [latest] = thread.versions.slice(-1)
         result.latest = latest
     }
-    //    console.log(result)
+    console.log(result)
     return result;
 })

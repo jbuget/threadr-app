@@ -22,6 +22,6 @@ model Version {
   id          Int          @id @default(autoincrement())
   createdAt   DateTime     @default(now())
   data        Json
-  thread      Thread       @relation(fields: [threadId], references: [id])
+  thread      Thread       @relation(fields: [threadId], references: [id], onDelete: Cascade)
   threadId    Int
 }

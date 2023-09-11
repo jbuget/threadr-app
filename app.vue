@@ -36,7 +36,7 @@ function newThread() {
 
       <div class="layout-content-wrapper">
         <div class="layout-content-main">
-          <ThreadEditor :threadId="threadId" @threadSaved="refreshThreadList" />
+          <ThreadEditor :threadId="threadId" @threadSaved="refreshThreadList" @threadDeleted="refreshThreadList"/>
         </div>
       </div>
     </div>
