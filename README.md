@@ -42,7 +42,7 @@ $ npm run dev -- -o
 **6/** 🚀 Enjoy Threadr at [localhost:3000](http://localhost:3000)!
 
 <p align="center">
-    <img src="/threader.png" width="480">
+    <img src="/threadr.png" width="480">
 </p>
 
 ## Configuration
