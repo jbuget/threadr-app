@@ -14,7 +14,7 @@ type CreateThreadRequest = {
 }
 
 export default defineEventHandler(async (event: any) => {
-    console.log(`GET /api/threads`)
+    console.log(`POST /api/threads`)
 
     const threadData: CreateThreadRequest = await readBody(event)
     const now = new Date()
@@ -41,6 +41,5 @@ export default defineEventHandler(async (event: any) => {
         const [latest] = thread.versions.slice(-1)
         result.latest = latest
     }
-    console.log(result)
     return result;
 })

@@ -93,7 +93,7 @@ async function publishThread(): Promise<void> {
   if (thread.value && thread.value.messages) {
     thread.value.id = await doSaveThread(thread.value)
     const nonEmptyMessages = thread.value.messages.filter((message: any) => message.text.trim().length > 0 || message.attachments.length > 0)
-    await $fetch('/api/publications', { method: 'post', body: { messages: nonEmptyMessages } })
+    await $fetch(`/api/threads/${thread.value.id}/publication`, { method: 'post', body: { messages: nonEmptyMessages } })
     toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
   }
 }
