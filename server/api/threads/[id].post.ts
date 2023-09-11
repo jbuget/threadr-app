@@ -45,6 +45,5 @@ export default defineEventHandler(async (event: any) => {
         const [latest] = thread.versions.slice(-1)
         result.latest = latest
     }
-    console.log(result)
     return result;
 })

@@ -95,7 +95,7 @@ async function publishThread(): Promise<void> {
   if (thread.value && thread.value.messages) {
     thread.value.id = await doSaveThread(thread.value)
     const nonEmptyMessages = thread.value.messages.filter((message: any) => message.text.trim().length > 0 || message.attachments.length > 0)
-    await $fetch(`/api/threads/${thread.value.id}/publication`, { method: 'post', body: { messages: nonEmptyMessages } })
+    await $fetch(`/api/threads/${thread.value.id}/publication`, { method: 'post' })
     toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
   }
 }
@@ -127,13 +127,13 @@ async function deleteThread(): Promise<void> {
         <h2 class="thread-title">ID: {{ thread.id }}</h2>
         <div class="thread-actions">
           <div class="save">
-            <Button label="Save" icon="pi pi-save" severity="info" size="small" @click="saveThread" />
+            <Button icon="pi pi-save" severity="info" size="small" @click="saveThread" />
           </div>
           <div class="publish">
-            <Button label="Publish" icon="pi pi-send" severity="success" size="small" @click="publishThread" />
+            <Button icon="pi pi-send" severity="success" size="small" @click="publishThread" />
           </div>
           <div class="delete">
-            <Button label="Delete" icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" />
+            <Button icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" />
           </div>
         </div>
       </div>

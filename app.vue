@@ -65,11 +65,16 @@ function newThread() {
   flex-direction: column;
 }
 
-.app-brand {}
+.app-brand {
+  border-bottom: 1px solid lightgray;
+  display: flex;
+  align-items: center;
+  height: 60px;
+}
 
 .app-name {
   font-weight: 800;
-  font-size: 2rem;
+  font-size: 1.5rem;
   margin: 0.5rem;
 }
 

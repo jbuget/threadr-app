@@ -4,7 +4,6 @@ const emit = defineEmits<{
 }>()
 
 const selectThread = (threadId: number) => {
-    console.log(`Clicked item ${threadId}`)
     emit('threadSelected', threadId);
 }
 
