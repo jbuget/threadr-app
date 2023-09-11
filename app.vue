@@ -6,13 +6,15 @@ const threadSummaryListKey = ref(generateUniqueKey('thread-summary-list'))
 
 async function loadThread(selectedTreadId: number) {
   threadId.value = selectedTreadId
-  console.log('Selected thread with ID ', threadId.value)
 }
 
 async function refreshThreadList() {
   threadSummaryListKey.value = generateUniqueKey('thread-summary-list')
 }
 
+function newThread() {
+  threadId.value = null
+}
 </script>
 
 <template>
@@ -20,7 +22,16 @@ async function refreshThreadList() {
     <div class="layout-container">
 
       <div class="layout-sidebar">
-        <ThreadSummaryList @threadSelected="loadThread" :key="threadSummaryListKey" />
+        <nav>
+          <div class="app-brand">
+            <span class="app-name">Threadr</span>
+          </div>
+          <div class="new-thread">
+            <Button icon="pi pi-plus" aria-label="Submit" label="New thread" severity="secondary" outlined
+              @click="newThread" @enter="newThread" />
+          </div>
+          <ThreadSummaryList @threadSelected="loadThread" :key="threadSummaryListKey" />
+        </nav>
       </div>
 
       <div class="layout-content-wrapper">
@@ -50,6 +61,20 @@ async function refreshThreadList() {
   max-width: 18rem;
   overflow-y: auto;
   border: 1px solid lightgray;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-brand {}
+
+.app-name {
+  font-weight: 800;
+  font-size: 2rem;
+  margin: 0.5rem;
+}
+
+.new-thread {
+  margin: 0.5rem;
 }
 
 .layout-content-wrapper {
