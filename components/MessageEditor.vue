@@ -102,7 +102,7 @@ function closeMediaEditionWithoutSave() {
             <div class="add-attachments">
                 <!-- Max file size: ~1Mb because of BlueSky (Masto = 8Mb) --->
                 <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true"
-                    :maxFileSize="1000000" chooseLabel=" " :showCancelButton="false" :show-upload-button="false"
+                    :maxFileSize="2000000" chooseLabel=" " :showCancelButton="false" :show-upload-button="false"
                     :unstyled="false" :auto="true" @upload="onUploadComplete($event)" title="Add media">
                 </FileUpload>
             </div>

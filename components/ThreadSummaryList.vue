@@ -14,7 +14,8 @@ const { data: threads } = await useFetch(
             id: threadData.id,
             createdAt: threadData.createdAt,
             updatedAt: threadData.updatedAt,
-            published: threadData.published,
+            scheduledAt: threadData.scheduledAt,
+            publishedAt: threadData.publishedAt,
             nbMessages: threadData.nbMessages
         }))
         return threads

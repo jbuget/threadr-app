@@ -20,7 +20,8 @@ export interface ThreadSummary {
   id?: number
   createdAt?: Date
   updatedAt?: Date
-  published: boolean
+  scheduledAt?: Date
+  publishedAt?: Date
   nbMesssages: number
 }
 
