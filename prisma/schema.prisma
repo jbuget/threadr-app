@@ -11,17 +11,19 @@ datasource db {
 }
 
 model Thread {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  published Boolean   @default(false)
-  versions  Version[]
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  scheduledAt DateTime?
+  publishedAt DateTime?
+  published   Boolean   @default(false)
+  versions    Version[]
 }
 
 model Version {
-  id          Int          @id @default(autoincrement())
-  createdAt   DateTime     @default(now())
-  data        Json
-  thread      Thread       @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  threadId    Int
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  data      Json
+  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  threadId  Int
 }

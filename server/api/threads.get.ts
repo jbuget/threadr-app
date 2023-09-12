@@ -15,7 +15,8 @@ export default defineEventHandler(async () => {
             id: thread.id,
             createdAt: thread.createdAt,
             updatedAt: thread.updatedAt,
-            published: thread.published,
+            scheduledAt: thread.scheduledAt,
+            publishedAt: thread.publishedAt,
             nbMessages: latestThreadData.messages.length
         }
     })

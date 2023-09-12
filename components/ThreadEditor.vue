@@ -19,7 +19,7 @@ const { data: thread, pending } = await useAsyncData(
   async () => {
     let thread: Thread
     if (props.threadId) {
-      const threadData:any = await $fetch(`/api/threads/${props.threadId}`)
+      const threadData: any = await $fetch(`/api/threads/${props.threadId}`)
       thread = {
         id: threadData.id,
         messages: threadData.latest.data.messages.map((message: any) => {
@@ -100,6 +100,18 @@ async function publishThread(): Promise<void> {
   }
 }
 
+async function scheduleThread(): Promise<void> {
+  if (thread.value && thread.value.messages) {
+    thread.value.id = await doSaveThread(thread.value)
+
+    const now = new Date()
+    const scheduledAt = new Date(now.setSeconds(now.getSeconds() + 30))
+
+    await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt } })
+    toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication forecast`, life: 3000 });
+  }
+}
+
 async function deleteThread(): Promise<void> {
   if (thread.value && thread.value.id) {
     const url = `/api/threads/${thread.value.id}`
@@ -132,6 +144,9 @@ async function deleteThread(): Promise<void> {
           <div class="publish">
             <Button icon="pi pi-send" severity="success" size="small" @click="publishThread" />
           </div>
+          <div class="schedule">
+            <Button icon="pi pi-calendar-times" severity="warning" size="small" @click="scheduleThread" />
+          </div>
           <div class="delete">
             <Button icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" />
           </div>
@@ -139,7 +154,7 @@ async function deleteThread(): Promise<void> {
       </div>
 
       <div class="messages" :key="updateKey">
-        <template v-for="(message, index) in thread.messages" >
+        <template v-for="(message, index) in thread.messages">
           <div class="message-wrapper">
             <MessageEditor :index="index" :message="message" @addMessageBelow="addMessageBelow(index + 1)"
               @removeMessage="removeMessage(index)" />

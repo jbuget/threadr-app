@@ -2,7 +2,9 @@
 CREATE TABLE "Thread" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NULL,
+    "scheduledAt" TIMESTAMP(3) NULL,
+    "publishedAt" TIMESTAMP(3) NULL,
     "published" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Thread_pkey" PRIMARY KEY ("id")

@@ -1,7 +1,6 @@
 import { prisma } from '../../../prisma/db'
 
 type UpdateThreadRequest = {
-    published: boolean
     messages: [{
         text: string,
         attachments: [{
@@ -28,7 +27,6 @@ export default defineEventHandler(async (event: any) => {
             },
             data: {
                 updatedAt: now,
-                published: threadData.published,
                 versions: {
                     create: [{
                         createdAt: now,

@@ -44,8 +44,6 @@ function newThread() {
 </template>
 
 <style scoped>
-.app {}
-
 .layout-container {
   display: flex;
   flex-direction: row;
