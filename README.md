@@ -19,7 +19,7 @@ You previously must generate, get and report your access keys for Twitter/X (new
 **3/** Run the Docker compose service `minio` (required to upload media files into platforms)
 
 ```shell
-$ docker compose -d minio
+$ docker compose up -d
 ```
 
 **4/** Configure your MinIO instance
