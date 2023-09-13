@@ -136,19 +136,19 @@ async function deleteThread(): Promise<void> {
     <!-- you will need to handle a loading state -->
     <div class="editor-content" v-if="!pending && thread">
       <div class="thread-header">
-        <h2 class="thread-title">ID: {{ thread.id }}</h2>
+        <h2 class="thread-title">{{ thread.id }}</h2>
         <div class="thread-actions">
           <div class="save">
-            <Button icon="pi pi-save" severity="info" size="small" @click="saveThread" />
+            <Button icon="pi pi-save" severity="info" size="small" @click="saveThread" rounded outlined/>
           </div>
           <div class="publish">
-            <Button icon="pi pi-send" severity="success" size="small" @click="publishThread" />
+            <Button icon="pi pi-send" severity="success" size="small" @click="publishThread" rounded outlined/>
           </div>
           <div class="schedule">
-            <Button icon="pi pi-calendar-times" severity="warning" size="small" @click="scheduleThread" />
+            <Button icon="pi pi-calendar-times" severity="warning" size="small" @click="scheduleThread" rounded outlined/>
           </div>
           <div class="delete">
-            <Button icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" />
+            <Button icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" rounded outlined/>
           </div>
         </div>
       </div>
