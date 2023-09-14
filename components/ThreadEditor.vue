@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import Calendar from 'primevue/calendar';
+import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
 import { useToast } from 'primevue/usetoast'
 import { Thread } from '~/models/models'
 import { generateUniqueKey } from '~/utils/utils'
@@ -7,6 +10,27 @@ const toast = useToast();
 /* Model */
 
 const updateKey = ref(generateUniqueKey('message-list'))
+
+const threadScheduleDialogVisible = ref(false)
+const threadScheduleDate = computed({
+  // getter
+  get() {
+    if (!thread || !thread.value || !thread.value.scheduledAt) {
+      return null
+    }
+    return thread.value.scheduledAt
+  },
+  // setter
+  set(newValue) {
+    if (thread && thread.value && typeof newValue === 'string') {
+      console.log(newValue)
+      thread.value.scheduledAt = new Date(newValue)
+    }
+  }
+})
+
+
+const threadPublicationDialogVisible = ref(false);
 
 const props = defineProps<{
   threadId: number | null
@@ -37,14 +61,18 @@ const { data: thread, pending } = await useAsyncData(
             })
           }
           return result
-        })
+        }),
+        scheduledAt: threadData.scheduledAt,
+        publishedAt: threadData.publishedAt
       }
     } else {
       thread = {
         messages: [{
           text: '',
           attachments: []
-        }]
+        }],
+        scheduledAt: undefined,
+        publishedAt: undefined
       }
     }
     return thread
@@ -104,10 +132,9 @@ async function scheduleThread(): Promise<void> {
   if (thread.value && thread.value.messages) {
     thread.value.id = await doSaveThread(thread.value)
 
-    const now = new Date()
-    const scheduledAt = new Date(now.setSeconds(now.getSeconds() + 30))
+    await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt: thread.value.scheduledAt } })
 
-    await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt } })
+    threadScheduleDialogVisible.value = false
     toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication forecast`, life: 3000 });
   }
 }
@@ -128,6 +155,9 @@ async function deleteThread(): Promise<void> {
   updateKey.value = generateUniqueKey('message-list')
 }
 
+async function toggleThreadScheduleDialogVisible() {
+  threadScheduleDialogVisible.value = !threadScheduleDialogVisible.value
+}
 </script>
 
 <template>
@@ -139,16 +169,17 @@ async function deleteThread(): Promise<void> {
         <h2 class="thread-title">{{ thread.id }}</h2>
         <div class="thread-actions">
           <div class="save">
-            <Button icon="pi pi-save" severity="info" size="small" @click="saveThread" rounded outlined/>
+            <Button icon="pi pi-save" severity="info" size="small" @click="saveThread" rounded outlined />
           </div>
           <div class="publish">
-            <Button icon="pi pi-send" severity="success" size="small" @click="publishThread" rounded outlined/>
+            <Button icon="pi pi-send" severity="success" size="small" @click="publishThread" rounded outlined />
           </div>
           <div class="schedule">
-            <Button icon="pi pi-calendar-times" severity="warning" size="small" @click="scheduleThread" rounded outlined/>
+            <Button icon="pi pi-calendar-times" severity="warning" size="small" @click="toggleThreadScheduleDialogVisible"
+              @enter="toggleThreadScheduleDialogVisible" rounded outlined />
           </div>
           <div class="delete">
-            <Button icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" rounded outlined/>
+            <Button icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" rounded outlined />
           </div>
         </div>
       </div>
@@ -165,7 +196,13 @@ async function deleteThread(): Promise<void> {
     <div v-else>
       Loading...
     </div>
-
+    <Dialog  class="p-fluid" v-model:visible="threadScheduleDialogVisible" modal header="Schedule the thread publication ">
+      <Calendar v-model="threadScheduleDate" showTime hourFormat="24" showButtonBar inline></Calendar>
+      <div style="margin-top: 1rem;">
+        <Button label="Schedule" severity="warning" @click="scheduleThread"
+              @enter="scheduleThread" />
+      </div>
+    </Dialog>
   </div>
 </template>
 
@@ -188,7 +225,7 @@ async function deleteThread(): Promise<void> {
   border-bottom: 1px solid lightgray;
   top: 0;
   background-color: white;
-  z-index: 9999;
+  z-index: 1;
   width: 500px;
 }
 
@@ -214,4 +251,5 @@ async function deleteThread(): Promise<void> {
 .thread-actions button {
   margin-left: 0.5rem;
 }
+
 </style>

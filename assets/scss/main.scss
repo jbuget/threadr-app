@@ -1,1 +1,17 @@
 @import "primeicons/primeicons.css";
+
+.p-datepicker .p-datepicker-header {
+  padding: 0 !important;
+}
+
+.p-datepicker table td {
+  padding: 0.25rem !important;
+}
+.p-datepicker table td > span {
+  width: 2rem !important;
+  height: 2rem !important;
+}
+
+.p-datepicker .p-datepicker-buttonbar {
+    padding: 0 !important;
+}
