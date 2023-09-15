@@ -10,8 +10,10 @@ export default defineEventHandler(async (event: any) => {
 
     console.log(`POST /api/threads/${threadId}/schedule`)
 
-    const now = new Date()
-    const scheduledAt = now.setSeconds(now.getSeconds() + 30)
+console.log("data:", data)
+
+    console.log('data.scheduledAt', data.scheduledAt)
+    const scheduledAt = Date.parse(data.scheduledAt)
     const delay = scheduledAt - Date.now()
 
     const threadData = await prisma.thread.findFirst({ where: { id: threadId } })
