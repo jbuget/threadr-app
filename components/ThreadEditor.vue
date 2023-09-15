@@ -8,7 +8,7 @@ const toast = useToast();
 
 /* Model */
 
-const updateKey = ref(generateUniqueKey('message-list'))
+const updateKey = ref(generateUniqueKey('thread'))
 
 const threadScheduleDialogVisible = ref(false)
 
@@ -88,11 +88,15 @@ const { data: thread, pending } = await useAsyncData(
 
 /* Controller */
 
+function changeUpdateKey() {
+  updateKey.value = generateUniqueKey('thread')
+}
+
 function addMessageBelow(index: number): void {
   if (thread.value && thread.value.messages) {
     thread.value.messages.splice(index, 0, { text: '', attachments: [] });
   }
-  updateKey.value = generateUniqueKey('message-list')
+  changeUpdateKey()
 }
 
 function removeMessage(index: number): void {
@@ -102,7 +106,7 @@ function removeMessage(index: number): void {
       addMessageBelow(0)
     }
   }
-  updateKey.value = generateUniqueKey('message-list')
+  changeUpdateKey()
 }
 
 async function doSaveThread(thread: Thread): Promise<number> {
@@ -112,7 +116,7 @@ async function doSaveThread(thread: Thread): Promise<number> {
   }
   const response: any = await $fetch(url, { method: 'post', body: { messages: thread.messages } })
   emit('thread-saved')
-  updateKey.value = generateUniqueKey('message-list')
+  changeUpdateKey()
   return response.id as number
 }
 
@@ -133,6 +137,7 @@ async function publishThread(): Promise<void> {
       thread.value.id = await doSaveThread(thread.value)
       const nonEmptyMessages = thread.value.messages.filter((message: any) => message.text.trim().length > 0 || message.attachments.length > 0)
       await $fetch(`/api/threads/${thread.value.id}/publication`, { method: 'post' })
+      changeUpdateKey()
       toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
     }
   } catch (err: any) {
@@ -148,6 +153,7 @@ async function scheduleThread(): Promise<void> {
       await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt: thread.value.scheduledAt } })
 
       threadScheduleDialogVisible.value = false
+      changeUpdateKey()
       toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication scheduled`, life: 3000 });
     }
   } catch (err: any) {
@@ -158,9 +164,9 @@ async function scheduleThread(): Promise<void> {
 async function cancelThreadSchedule(): Promise<void> {
   try {
     if (thread.value && thread.value.id && thread.value.scheduledAt) {
-
       await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'delete' })
-
+      thread.value.scheduledAt = undefined
+      changeUpdateKey()
       toast.add({ severity: 'success', summary: 'Thread schedule canceled', detail: `Publication canceled`, life: 3000 });
     }
   } catch (err: any) {
@@ -182,7 +188,7 @@ async function deleteThread(): Promise<void> {
         attachments: []
       }]
     }
-    updateKey.value = generateUniqueKey('message-list')
+    changeUpdateKey()
   } catch (err: any) {
     toast.add({ severity: 'error', summary: 'Thread could not be deleted', detail: err.message, life: 3000 });
   }
@@ -235,7 +241,7 @@ function toggleThreadScheduleDialogVisible() {
           <div v-else-if="thread.updatedAt">
             <Message severity="info" icon="pi pi-save" :closable="false">{{ threadMessage }}</Message>
           </div>
-          <div v-else>COucouldek okf oofk okgo</div>
+          <div v-else class="empty-message"/>
         </div>
 
         <div class="messages" :key="updateKey">
@@ -292,7 +298,7 @@ function toggleThreadScheduleDialogVisible() {
 
 .thread-content {
   margin: 74px auto 40px;
-  padding: 20px 0;
+  padding: 10px 0;
 }
 .messages {
   display: flex;
@@ -308,5 +314,10 @@ function toggleThreadScheduleDialogVisible() {
 
 .thread-actions button {
   margin-left: 0.5rem;
+}
+
+.empty-message {
+  height: 4rem;
+  margin: 1rem 0;
 }
 </style>

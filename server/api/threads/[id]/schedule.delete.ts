@@ -1,7 +1,4 @@
-import { Thread } from '~/models/models'
-import { Worker } from 'bullmq'
-import { publish } from '~/services/publication-service'
-import { connection, queue } from '~/utils/queue'
+import { queue } from '~/utils/queue'
 import { prisma } from '~/prisma/db'
 
 export default defineEventHandler(async (event: any) => {
@@ -18,7 +15,12 @@ export default defineEventHandler(async (event: any) => {
         data: { scheduledAt: null }
     })
 
-    // TODO : find and remove job
+    const jobName = `thread-${threadId}`
+    const jobs = await queue.getDelayed()
+    const threadScheduleJob = jobs.find((job) => job.name === jobName)
+    if (threadScheduleJob && threadScheduleJob.id) {
+        await queue.remove(threadScheduleJob.id)
+    }
 
-    return 'ok'
+    return
 })
