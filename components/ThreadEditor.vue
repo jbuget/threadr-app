@@ -228,18 +228,18 @@ function toggleThreadScheduleDialogVisible() {
       <div class="thread-content">
         <div class="thread-status">
           <div v-if="thread.publishedAt">
-            <Message severity="success" icon="pi pi-send" :closable="false">{{ threadMessage }}</Message>
+            <InlineMessage severity="success" icon="pi pi-send" :closable="false">{{ threadMessage }}</InlineMessage>
           </div>
           <div v-else-if="thread.scheduledAt">
-            <Message severity="warn" :closable="false">
+            <InlineMessage severity="warn" :closable="false">
               {{ threadMessage }}
               <Button icon="pi pi-times" aria-label="Cancel thread schedule" title="Cancel thread schedule"
                 severity="warning" size="small" @click="cancelThreadSchedule" @enter="cancelThreadSchedule" rounded
                 style="width: 0.875rem; height: 0.875rem; padding: 0.625rem; margin-left: 0.875rem;"></Button>
-            </Message>
+            </InlineMessage>
           </div>
           <div v-else-if="thread.updatedAt">
-            <Message severity="info" icon="pi pi-save" :closable="false">{{ threadMessage }}</Message>
+            <InlineMessage severity="info" icon="pi pi-save" :closable="false">{{ threadMessage }}</InlineMessage>
           </div>
           <div v-else class="empty-message"/>
         </div>
@@ -317,7 +317,13 @@ function toggleThreadScheduleDialogVisible() {
 }
 
 .empty-message {
-  height: 4rem;
+  height: 2rem;
+  margin: 1rem 0;
+}
+
+.p-inline-message {
+  display: flex;
+  justify-content: left;
   margin: 1rem 0;
 }
 </style>
