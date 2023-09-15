@@ -58,7 +58,7 @@ function newThread() {
   width: 18rem;
   max-width: 18rem;
   overflow-y: auto;
-  border: 1px solid lightgray;
+  border-right: 1px solid lightgray;
   display: flex;
   flex-direction: column;
 }

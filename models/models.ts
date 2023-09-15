@@ -16,6 +16,7 @@ export interface Thread {
   id?: number
   messages?: Message[]
   createdAt?: Date
+  updatedAt?: Date
   scheduledAt?: Date | undefined
   publishedAt?: Date | undefined
 }
