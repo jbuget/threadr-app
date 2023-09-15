@@ -219,27 +219,33 @@ function toggleThreadScheduleDialogVisible() {
         </div>
       </div>
 
-      <div class="messages" :key="updateKey">
-        <div v-if="thread.publishedAt">
-          <Message severity="success" icon="pi pi-send" :closable="false">{{ threadMessage }}</Message>
-        </div>
-        <div v-else-if="thread.scheduledAt">
-          <Message severity="warn" :closable="false">
-            {{ threadMessage }}
-            <Button icon="pi pi-times" aria-label="Cancel thread schedule" title="Cancel thread schedule" severity="warning" size="small" @click="cancelThreadSchedule"
-              @enter="cancelThreadSchedule" rounded style="width: 0.875rem; height: 0.875rem; padding: 0.625rem; margin-left: 0.875rem;"></Button>
-          </Message>
-        </div>
-        <div v-else-if="thread.updatedAt">
-          <Message severity="info" icon="pi pi-save" :closable="false">{{ threadMessage }}</Message>
+      <div class="thread-content">
+        <div class="thread-status">
+          <div v-if="thread.publishedAt">
+            <Message severity="success" icon="pi pi-send" :closable="false">{{ threadMessage }}</Message>
+          </div>
+          <div v-else-if="thread.scheduledAt">
+            <Message severity="warn" :closable="false">
+              {{ threadMessage }}
+              <Button icon="pi pi-times" aria-label="Cancel thread schedule" title="Cancel thread schedule"
+                severity="warning" size="small" @click="cancelThreadSchedule" @enter="cancelThreadSchedule" rounded
+                style="width: 0.875rem; height: 0.875rem; padding: 0.625rem; margin-left: 0.875rem;"></Button>
+            </Message>
+          </div>
+          <div v-else-if="thread.updatedAt">
+            <Message severity="info" icon="pi pi-save" :closable="false">{{ threadMessage }}</Message>
+          </div>
+          <div v-else>COucouldek okf oofk okgo</div>
         </div>
 
-        <template v-for="(message, index) in thread.messages">
-          <div class="message-wrapper">
-            <MessageEditor :index="index" :message="message" @addMessageBelow="addMessageBelow(index + 1)"
-              @removeMessage="removeMessage(index)" />
-          </div>
-        </template>
+        <div class="messages" :key="updateKey">
+          <template v-for="(message, index) in thread.messages">
+            <div class="message-wrapper">
+              <MessageEditor :index="index" :message="message" @addMessageBelow="addMessageBelow(index + 1)"
+                @removeMessage="removeMessage(index)" />
+            </div>
+          </template>
+        </div>
       </div>
 
       <Dialog class="p-fluid" v-model:visible="threadScheduleDialogVisible" modal
@@ -284,11 +290,13 @@ function toggleThreadScheduleDialogVisible() {
   flex-grow: 1;
 }
 
-.messages {
+.thread-content {
   margin: 74px auto 40px;
+  padding: 20px 0;
+}
+.messages {
   display: flex;
   flex-direction: column;
-  padding: 40px 0;
 }
 
 .thread-actions {
