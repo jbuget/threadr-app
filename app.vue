@@ -22,7 +22,7 @@ function newThread() {
     <div class="layout-container">
 
       <div class="layout-sidebar">
-        <nav>
+        <nav class="p-fluid">
           <div class="app-brand">
             <span class="app-name">Threadr</span>
           </div>

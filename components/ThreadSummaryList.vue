@@ -12,6 +12,7 @@ const { data: threads } = await useFetch(
     transform: (input: any) => {
         const threads = input.map((threadData: any) => ({
             id: threadData.id,
+            title: threadData.title,
             createdAt: threadData.createdAt,
             updatedAt: threadData.updatedAt,
             scheduledAt: threadData.scheduledAt,
@@ -26,11 +27,9 @@ const { data: threads } = await useFetch(
 <template>
     <div class="threads" v-if="threads">
         <div class="thread" v-for="(thread) in threads" @click="selectThread(thread.id)">
-            <span class="pi pi-comment" />
-            <span class="thread-title">Thread #{{ thread.id }}</span>
-            <span> - </span>
-            <!--<span class="thread-meta">{{ thread.createdAt }}</span>-->
-            <span class="thread-nb-messages">{{ thread.nbMessages }} messages</span>
+            <div class="thread-meta">{{ (new Date(thread.createdAt)).toLocaleString() }}</div>
+            <div class="thread-title">{{ thread.title }}</div>
+            <div class="thread-nb-messages">{{ thread.nbMessages }} messages</div>
         </div>
     </div>
     <div v-else>
@@ -54,13 +53,14 @@ const { data: threads } = await useFetch(
     background-color: rgba(100, 116, 139, 0.04);
 }
 
+.thread-meta {
+    font-size: 0.8rem;
+    color: grey;
+}
 .thread-title {
     display: inline-block;
-    margin-left: 0.5rem;
-}
-
-.thread-meta {
-    display: block;
+    max-height: 2.75rem;
+    overflow: hidden;
 }
 
 .thread-nb-messages {
