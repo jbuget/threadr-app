@@ -22,6 +22,7 @@ export interface Thread {
 }
 export interface ThreadSummary {
   id?: number
+  title: string
   createdAt?: Date
   updatedAt?: Date
   scheduledAt?: Date
