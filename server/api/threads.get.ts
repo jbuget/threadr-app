@@ -4,6 +4,11 @@ export default defineEventHandler(async () => {
     console.log(`GET /api/threads`)
 
     const threads = await prisma.thread.findMany({
+        orderBy: [{
+            updatedAt: 'desc'
+        }, {
+            createdAt: 'desc'
+        }],
         include: {
             versions: true
         }
