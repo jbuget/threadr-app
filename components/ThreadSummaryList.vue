@@ -42,10 +42,9 @@ function badgeStyle(thread: ThreadSummary) {
         <div class="thread" v-for="(thread) in threads" @click="selectThread(thread.id)">
             <div class="thread-meta">
                 <Badge :severity="badgeStyle(thread)"></Badge>
-                {{ (new Date(thread.createdAt)).toLocaleString() }}
+                {{ (new Date(thread.createdAt)).toLocaleString() }} · {{ thread.nbMessages }} messages
             </div>
             <div class="thread-title">{{ thread.title }}</div>
-            <div class="thread-nb-messages">{{ thread.nbMessages }} messages</div>
         </div>
     </div>
     <div v-else>

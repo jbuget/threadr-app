@@ -189,21 +189,21 @@ async function postMessages(messages: Message[]): Promise<string[]> {
 
     if (process.env.BLUESKY_ENABLED as string === 'true') {
         console.log('Publish messages on Bluesky')
-        //await postMessagesOnBluesky(messages)
+        await postMessagesOnBluesky(messages)
         platforms.push('Bluesky')
         console.log('Messages published on Bluesky.')
     }
 
     if (process.env.MASTODON_ENABLED as string === 'true') {
         console.log('Publish messages on Mastodon…')
-        //await postMessagesOnMastodon(messages)
+        await postMessagesOnMastodon(messages)
         platforms.push('Mastodon')
         console.log('Messages published on Mastodon.')
     }
 
     if (process.env.TWITTER_ENABLED as string === 'true') {
         console.log('Publish messages on Twitter…')
-        //await postMessagesOnTwitter(messages)
+        await postMessagesOnTwitter(messages)
         platforms.push('Twitter')
         console.log('Messages published on Twitter.')
     }
