@@ -129,13 +129,19 @@ async function publishThread(): Promise<void> {
 }
 
 async function scheduleThread(): Promise<void> {
-  if (thread.value && thread.value.messages) {
-    thread.value.id = await doSaveThread(thread.value)
+  try {
+    if (thread.value && thread.value.messages) {
+      thread.value.id = await doSaveThread(thread.value)
 
-    await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt: thread.value.scheduledAt } })
+      console.log('thread.value.scheduledAt:', thread.value.scheduledAt)
 
-    threadScheduleDialogVisible.value = false
-    toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication forecast`, life: 3000 });
+      await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt: thread.value.scheduledAt } })
+
+      threadScheduleDialogVisible.value = false
+      toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication forecast`, life: 3000 });
+    }
+  } catch (err: any) {
+    toast.add({ severity: 'error', summary: 'Thread could not be scheduled', detail: err.message, life: 3000 });
   }
 }
 
@@ -192,17 +198,18 @@ async function toggleThreadScheduleDialogVisible() {
           </div>
         </template>
       </div>
+
+      <Dialog class="p-fluid" v-model:visible="threadScheduleDialogVisible" modal
+        header="Schedule the thread publication ">
+        <Calendar v-model="thread.scheduledAt" showTime hourFormat="24" showButtonBar inline></Calendar>
+        <div style="margin-top: 1rem;">
+          <Button label="Schedule" severity="warning" @click="scheduleThread" @enter="scheduleThread" />
+        </div>
+      </Dialog>
     </div>
     <div v-else>
       Loading...
     </div>
-    <Dialog  class="p-fluid" v-model:visible="threadScheduleDialogVisible" modal header="Schedule the thread publication ">
-      <Calendar v-model="threadScheduleDate" showTime hourFormat="24" showButtonBar inline></Calendar>
-      <div style="margin-top: 1rem;">
-        <Button label="Schedule" severity="warning" @click="scheduleThread"
-              @enter="scheduleThread" />
-      </div>
-    </Dialog>
   </div>
 </template>
 
@@ -251,5 +258,4 @@ async function toggleThreadScheduleDialogVisible() {
 .thread-actions button {
   margin-left: 0.5rem;
 }
-
 </style>
