@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import Badge from 'primevue/badge';
+import { ThreadSummary } from '~/models/models';
+
 const emit = defineEmits<{
     threadSelected: [id: number]
 }>()
@@ -22,12 +25,25 @@ const { data: threads } = await useFetch(
         return threads
     }
 })
+
+function badgeStyle(thread: ThreadSummary) {
+    if (thread.publishedAt) {
+        return 'success'
+    }
+    if (thread.scheduledAt) {
+        return 'warning'
+    }
+    return 'info'
+}
 </script>
 
 <template>
     <div class="threads" v-if="threads">
         <div class="thread" v-for="(thread) in threads" @click="selectThread(thread.id)">
-            <div class="thread-meta">{{ (new Date(thread.createdAt)).toLocaleString() }}</div>
+            <div class="thread-meta">
+                <Badge :severity="badgeStyle(thread)"></Badge>
+                {{ (new Date(thread.createdAt)).toLocaleString() }}
+            </div>
             <div class="thread-title">{{ thread.title }}</div>
             <div class="thread-nb-messages">{{ thread.nbMessages }} messages</div>
         </div>
