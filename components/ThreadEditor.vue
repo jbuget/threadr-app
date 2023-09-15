@@ -12,25 +12,6 @@ const toast = useToast();
 const updateKey = ref(generateUniqueKey('message-list'))
 
 const threadScheduleDialogVisible = ref(false)
-const threadScheduleDate = computed({
-  // getter
-  get() {
-    if (!thread || !thread.value || !thread.value.scheduledAt) {
-      return null
-    }
-    return thread.value.scheduledAt
-  },
-  // setter
-  set(newValue) {
-    if (thread && thread.value && typeof newValue === 'string') {
-      console.log(newValue)
-      thread.value.scheduledAt = new Date(newValue)
-    }
-  }
-})
-
-
-const threadPublicationDialogVisible = ref(false);
 
 const props = defineProps<{
   threadId: number | null
@@ -83,7 +64,6 @@ const { data: thread, pending } = await useAsyncData(
 /* Controller */
 
 function addMessageBelow(index: number): void {
-  console.log('addMessageBelow', index)
   if (thread.value && thread.value.messages) {
     thread.value.messages.splice(index, 0, { text: '', attachments: [] });
   }
@@ -120,11 +100,15 @@ async function saveThread(): Promise<void> {
 }
 
 async function publishThread(): Promise<void> {
-  if (thread.value && thread.value.messages) {
-    thread.value.id = await doSaveThread(thread.value)
-    const nonEmptyMessages = thread.value.messages.filter((message: any) => message.text.trim().length > 0 || message.attachments.length > 0)
-    await $fetch(`/api/threads/${thread.value.id}/publication`, { method: 'post' })
-    toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
+  try {
+    if (thread.value && thread.value.messages) {
+      thread.value.id = await doSaveThread(thread.value)
+      const nonEmptyMessages = thread.value.messages.filter((message: any) => message.text.trim().length > 0 || message.attachments.length > 0)
+      await $fetch(`/api/threads/${thread.value.id}/publication`, { method: 'post' })
+      toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
+    }
+  } catch (err: any) {
+    toast.add({ severity: 'error', summary: 'Thread could not be saved', detail: err.message, life: 3000 });
   }
 }
 
@@ -138,7 +122,7 @@ async function scheduleThread(): Promise<void> {
       await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt: thread.value.scheduledAt } })
 
       threadScheduleDialogVisible.value = false
-      toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication forecast`, life: 3000 });
+      toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication scheduled`, life: 3000 });
     }
   } catch (err: any) {
     toast.add({ severity: 'error', summary: 'Thread could not be scheduled', detail: err.message, life: 3000 });
@@ -146,22 +130,26 @@ async function scheduleThread(): Promise<void> {
 }
 
 async function deleteThread(): Promise<void> {
-  if (thread.value && thread.value.id) {
-    const url = `/api/threads/${thread.value.id}`
-    await $fetch(url, { method: 'delete' })
-    emit('thread-deleted')
-    toast.add({ severity: 'success', summary: 'Thread deleted', detail: `Removed thread ${thread.value.id} and its messages`, life: 3000 });
+  try {
+    if (thread.value && thread.value.id) {
+      const url = `/api/threads/${thread.value.id}`
+      await $fetch(url, { method: 'delete' })
+      emit('thread-deleted')
+      toast.add({ severity: 'success', summary: 'Thread deleted', detail: `Removed thread ${thread.value.id} and its messages`, life: 3000 });
+    }
+    thread.value = {
+      messages: [{
+        text: '',
+        attachments: []
+      }]
+    }
+    updateKey.value = generateUniqueKey('message-list')
+  } catch (err: any) {
+    toast.add({ severity: 'error', summary: 'Thread could not be deleted', detail: err.message, life: 3000 });
   }
-  thread.value = {
-    messages: [{
-      text: '',
-      attachments: []
-    }]
-  }
-  updateKey.value = generateUniqueKey('message-list')
 }
 
-async function toggleThreadScheduleDialogVisible() {
+function toggleThreadScheduleDialogVisible() {
   threadScheduleDialogVisible.value = !threadScheduleDialogVisible.value
 }
 </script>
