@@ -19,6 +19,12 @@ const props = defineProps<{
 
 const emit = defineEmits(['thread-saved', 'thread-deleted'])
 
+const isThreadEditable = computed(() => {
+  if (thread.value) {
+    return !thread.value.scheduledAt && !thread.value.publishedAt
+  }
+})
+
 const { data: thread, pending } = await useAsyncData(
   'thread',
   async () => {
@@ -163,14 +169,16 @@ function toggleThreadScheduleDialogVisible() {
         <h2 class="thread-title">{{ thread.id }}</h2>
         <div class="thread-actions">
           <div class="save">
-            <Button icon="pi pi-save" severity="info" size="small" @click="saveThread" rounded outlined />
+            <Button icon="pi pi-save" severity="info" size="small" @click="saveThread" rounded outlined
+              :disabled="isThreadEditable" />
           </div>
           <div class="publish">
-            <Button icon="pi pi-send" severity="success" size="small" @click="publishThread" rounded outlined />
+            <Button icon="pi pi-send" severity="success" size="small" @click="publishThread" rounded outlined
+              :disabled="isThreadEditable" />
           </div>
           <div class="schedule">
             <Button icon="pi pi-calendar-times" severity="warning" size="small" @click="toggleThreadScheduleDialogVisible"
-              @enter="toggleThreadScheduleDialogVisible" rounded outlined />
+              @enter="toggleThreadScheduleDialogVisible" rounded outlined :disabled="isThreadEditable" />
           </div>
           <div class="delete">
             <Button icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" rounded outlined />
