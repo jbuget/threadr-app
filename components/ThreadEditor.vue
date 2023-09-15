@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Calendar from 'primevue/calendar';
 import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
 import { useToast } from 'primevue/usetoast'
 import { Thread } from '~/models/models'
 import { generateUniqueKey } from '~/utils/utils'
@@ -99,9 +98,13 @@ async function doSaveThread(thread: Thread): Promise<number> {
 
 
 async function saveThread(): Promise<void> {
-  if (thread.value && thread.value.messages) {
-    thread.value.id = await doSaveThread(thread.value)
-    toast.add({ severity: 'success', summary: 'Thread saved', detail: `${thread.value.messages.length} posts saved`, life: 3000 });
+  try {
+    if (thread.value && thread.value.messages) {
+      thread.value.id = await doSaveThread(thread.value)
+      toast.add({ severity: 'success', summary: 'Thread saved', detail: `${thread.value.messages.length} posts saved`, life: 3000 });
+    }
+  } catch (err: any) {
+    toast.add({ severity: 'error', summary: 'Thread could not be saved', detail: err.message, life: 3000 });
   }
 }
 
@@ -114,7 +117,7 @@ async function publishThread(): Promise<void> {
       toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
     }
   } catch (err: any) {
-    toast.add({ severity: 'error', summary: 'Thread could not be saved', detail: err.message, life: 3000 });
+    toast.add({ severity: 'error', summary: 'Thread could not be published', detail: err.message, life: 3000 });
   }
 }
 
