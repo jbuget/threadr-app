@@ -39,10 +39,10 @@ console.log("data:", data)
         }
     }, { connection })
     worker.on('completed', job => {
-        console.log(`${job.id} has completed!`);
+        console.log(`Job ${job.id} has completed!`);
     });
 
     worker.on('failed', (job, err) => {
-        console.log(`${job?.id} has failed with ${err.message}`);
+        console.log(`Job ${job?.id} has failed with ${err.message}`);
     });
 })
