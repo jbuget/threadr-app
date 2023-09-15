@@ -6,6 +6,7 @@ import Dialog from 'primevue/dialog';
 import Divider from "primevue/divider";
 import FileUpload from "primevue/fileupload";
 import Image from "primevue/image";
+import InlineMessage from "primevue/inlinemessage";
 import InputText from 'primevue/inputtext';
 import Message from 'primevue/message';
 import Textarea from "primevue/textarea";
@@ -21,6 +22,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     nuxtApp.vueApp.component("Divider", Divider);
     nuxtApp.vueApp.component("FileUpload", FileUpload);
     nuxtApp.vueApp.component("Image", Image);
+    nuxtApp.vueApp.component("InlineMessage", InlineMessage);
     nuxtApp.vueApp.component("InputText", InputText);
     nuxtApp.vueApp.component("Message", Message);
     nuxtApp.vueApp.component("Textarea", Textarea);
