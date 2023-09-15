@@ -22,6 +22,25 @@ const isThreadEditable = computed(() => {
   if (thread.value) {
     return !thread.value.scheduledAt && !thread.value.publishedAt
   }
+  return true
+})
+
+const threadMessage = computed(() => {
+  if (thread.value) {
+    if (thread.value.publishedAt) {
+      const date = new Date(thread.value.publishedAt)
+      return `Thread published on ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
+    }
+    if (thread.value.scheduledAt) {
+      const date = new Date(thread.value.scheduledAt)
+      return `Thread scheduled on ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
+    }
+    if (thread.value.updatedAt) {
+      const date = new Date(thread.value.updatedAt)
+      return `Thread saved on ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
+    }
+  }
+  return ''
 })
 
 const { data: thread, pending } = await useAsyncData(
@@ -48,6 +67,7 @@ const { data: thread, pending } = await useAsyncData(
           }
           return result
         }),
+        updatedAt: threadData.updatedAt,
         scheduledAt: threadData.scheduledAt,
         publishedAt: threadData.publishedAt
       }
@@ -96,7 +116,6 @@ async function doSaveThread(thread: Thread): Promise<number> {
   return response.id as number
 }
 
-
 async function saveThread(): Promise<void> {
   try {
     if (thread.value && thread.value.messages) {
@@ -126,12 +145,23 @@ async function scheduleThread(): Promise<void> {
     if (thread.value && thread.value.messages) {
       thread.value.id = await doSaveThread(thread.value)
 
-      console.log('thread.value.scheduledAt:', thread.value.scheduledAt)
-
       await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt: thread.value.scheduledAt } })
 
       threadScheduleDialogVisible.value = false
       toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication scheduled`, life: 3000 });
+    }
+  } catch (err: any) {
+    toast.add({ severity: 'error', summary: 'Thread could not be scheduled', detail: err.message, life: 3000 });
+  }
+}
+
+async function cancelThreadSchedule(): Promise<void> {
+  try {
+    if (thread.value && thread.value.id && thread.value.scheduledAt) {
+
+      await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'delete' })
+
+      toast.add({ severity: 'success', summary: 'Thread schedule canceled', detail: `Publication canceled`, life: 3000 });
     }
   } catch (err: any) {
     toast.add({ severity: 'error', summary: 'Thread could not be scheduled', detail: err.message, life: 3000 });
@@ -173,15 +203,15 @@ function toggleThreadScheduleDialogVisible() {
         <div class="thread-actions">
           <div class="save">
             <Button icon="pi pi-save" severity="info" size="small" @click="saveThread" rounded outlined
-              :disabled="isThreadEditable" />
+              :disabled="!isThreadEditable" />
           </div>
           <div class="publish">
             <Button icon="pi pi-send" severity="success" size="small" @click="publishThread" rounded outlined
-              :disabled="isThreadEditable" />
+              :disabled="!isThreadEditable" />
           </div>
           <div class="schedule">
             <Button icon="pi pi-calendar-times" severity="warning" size="small" @click="toggleThreadScheduleDialogVisible"
-              @enter="toggleThreadScheduleDialogVisible" rounded outlined :disabled="isThreadEditable" />
+              @enter="toggleThreadScheduleDialogVisible" rounded outlined :disabled="!isThreadEditable" />
           </div>
           <div class="delete">
             <Button icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" rounded outlined />
@@ -190,6 +220,20 @@ function toggleThreadScheduleDialogVisible() {
       </div>
 
       <div class="messages" :key="updateKey">
+        <div v-if="thread.publishedAt">
+          <Message severity="success" icon="pi pi-send" :closable="false">{{ threadMessage }}</Message>
+        </div>
+        <div v-else-if="thread.scheduledAt">
+          <Message severity="warn" :closable="false">
+            {{ threadMessage }}
+            <Button icon="pi pi-times" aria-label="Cancel thread schedule" title="Cancel thread schedule" severity="warning" size="small" @click="cancelThreadSchedule"
+              @enter="cancelThreadSchedule" rounded style="width: 0.875rem; height: 0.875rem; padding: 0.625rem; margin-left: 0.875rem;"></Button>
+          </Message>
+        </div>
+        <div v-else-if="thread.updatedAt">
+          <Message severity="info" icon="pi pi-save" :closable="false">{{ threadMessage }}</Message>
+        </div>
+
         <template v-for="(message, index) in thread.messages">
           <div class="message-wrapper">
             <MessageEditor :index="index" :message="message" @addMessageBelow="addMessageBelow(index + 1)"
