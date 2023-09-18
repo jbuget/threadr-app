@@ -204,7 +204,7 @@ function toggleThreadScheduleDialogVisible() {
     <div class="editor-content" v-if="!pending && thread">
       <div class="thread-header">
         <h2 class="thread-title"></h2>
-        <div class="thread-actions">
+        <div class="thread-actions" v-if="isThreadEditable">
           <div class="save">
             <Button icon="pi pi-save" severity="info" size="small" @click="saveThread" rounded outlined
               :disabled="!isThreadEditable" />
@@ -218,12 +218,13 @@ function toggleThreadScheduleDialogVisible() {
               @enter="toggleThreadScheduleDialogVisible" rounded outlined :disabled="!isThreadEditable" />
           </div>
           <div class="delete">
-            <Button icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" rounded outlined />
+            <Button icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" rounded outlined
+              :disabled="!isThreadEditable" />
           </div>
         </div>
       </div>
 
-      <div class="thread-content"  :key="updateKey">
+      <div class="thread-content" :key="updateKey">
         <div class="thread-status">
           <div v-if="thread.publishedAt">
             <InlineMessage severity="success" icon="pi pi-send" :closable="false">{{ threadMessage }}</InlineMessage>
@@ -236,7 +237,7 @@ function toggleThreadScheduleDialogVisible() {
                 style="width: 0.875rem; height: 0.875rem; padding: 0.625rem; margin-left: 0.875rem;"></Button>
             </InlineMessage>
           </div>
-          <div v-else class="empty-message"/>
+          <div v-else class="empty-message" />
         </div>
 
         <div class="messages">
@@ -291,6 +292,7 @@ function toggleThreadScheduleDialogVisible() {
   margin: 74px auto 40px;
   padding: 10px 0;
 }
+
 .messages {
   display: flex;
   flex-direction: column;
@@ -299,6 +301,7 @@ function toggleThreadScheduleDialogVisible() {
 .message-wrapper:last-child {
   margin-bottom: 4rem;
 }
+
 .thread-actions {
   display: flex;
   align-items: center;
@@ -319,5 +322,4 @@ function toggleThreadScheduleDialogVisible() {
   display: flex;
   justify-content: left;
   margin: 1rem 0;
-}
-</style>
+}</style>
