@@ -252,6 +252,10 @@ const inputChanged = debounce(250, () => {
     flex: 1 1 0%;
 }
 
+.message-wrapper:last-of-type .thread-line {
+    visibility: hidden;
+}
+
 .message-main {
     display: flex;
     flex-direction: column;
