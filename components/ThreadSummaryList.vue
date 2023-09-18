@@ -111,6 +111,8 @@ function badgeStyle(thread: ThreadSummary) {
     display: flex;
     flex-direction: row;
     align-items: center;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
 .thread-list-title>.pi {
@@ -118,12 +120,12 @@ function badgeStyle(thread: ThreadSummary) {
 }
 
 .thread-list-items {
-    padding: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .thread {
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.5rem 1rem;
     overflow: hidden;
     border-radius: 5px;
 }

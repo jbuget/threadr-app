@@ -236,9 +236,6 @@ function toggleThreadScheduleDialogVisible() {
                 style="width: 0.875rem; height: 0.875rem; padding: 0.625rem; margin-left: 0.875rem;"></Button>
             </InlineMessage>
           </div>
-          <div v-else-if="thread.updatedAt">
-            <InlineMessage severity="info" icon="pi pi-save" :closable="false">{{ threadMessage }}</InlineMessage>
-          </div>
           <div v-else class="empty-message"/>
         </div>
 
