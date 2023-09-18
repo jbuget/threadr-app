@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Avatar from 'primevue/avatar'
 import { FileUploadUploadEvent } from "primevue/fileupload";
 import { useToast } from "primevue/usetoast";
 import { Attachment, Message } from "~/models/models";
@@ -83,46 +84,51 @@ const inputChanged = debounce(250, () => {
 
 <template>
     <div class="message">
-        <div class="message-meta">
-            <span class="message-username">{{ config.public.displayingName }}</span>
+        <div class="message-aside">
+            <Avatar label="P" class="mr-2" size="large" shape="circle" />
+            <div class="thread-line"></div>
         </div>
-        <div class="message-text">
-            <Textarea v-model="message.text" placeholder="What's up?" rows="2" autoResize :unstyled="true"
-                @input="inputChanged"></Textarea>
-        </div>
-        <div class="message-attachments" :style="messageAttachmentsStyle">
-            <div class="attachment" v-for="(attachment, index) in message.attachments">
-                <Image class="attachment-img" :src=attachment.location alt="Image" />
-                <div class="attachment-actions">
-                    <div class="edit-attachment">
-                        <Button icon="pi pi-pencil" size="small" text rounded outlined @enter="editMedia(attachment)"
-                            @click="editMedia(attachment)" severity="secondary" title="Edit alt" />
-                    </div>
-                    <div class="remove-attachment">
-                        <Button icon="pi pi-times" size="small" text rounded outlined @enter="removeMedia(index)"
-                            @click="removeMedia(index)" severity="secondary" title="Remove media" />
+        <div class="message-main">
+            <div class="message-meta">
+                <span class="message-username">{{ config.public.displayingName }}</span>
+            </div>
+            <div class="message-text">
+                <Textarea v-model="message.text" placeholder="What's up?" rows="2" autoResize :unstyled="true" @input="inputChanged" />
+            </div>
+            <div class="message-attachments" :style="messageAttachmentsStyle">
+                <div class="attachment" v-for="(attachment, index) in message.attachments">
+                    <Image class="attachment-img" :src=attachment.location alt="Image" />
+                    <div class="attachment-actions">
+                        <div class="edit-attachment">
+                            <Button icon="pi pi-pencil" size="small" text rounded outlined @enter="editMedia(attachment)"
+                                @click="editMedia(attachment)" severity="secondary" title="Edit alt" />
+                        </div>
+                        <div class="remove-attachment">
+                            <Button icon="pi pi-times" size="small" text rounded outlined @enter="removeMedia(index)"
+                                @click="removeMedia(index)" severity="secondary" title="Remove media" />
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="actions">
-            <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
-            <div class="message-length"><span class="message-text-length">{{ message.text.length }}</span> / 280</div>
-            <div class="message-index"><span>#{{ index + 1 }}</span></div>
-            <div class="add-attachments">
-                <!-- Max file size: ~1Mb because of BlueSky (Masto = 8Mb) --->
-                <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true"
-                    :maxFileSize="2000000" chooseLabel=" " :showCancelButton="false" :show-upload-button="false"
-                    :unstyled="false" :auto="true" @upload="onUploadComplete($event)" title="Add media">
-                </FileUpload>
-            </div>
-            <div class="add-message-below">
-                <Button icon="pi pi-plus" size="small" text @enter="$emit('add-message-below')"
-                    @click="$emit('add-message-below')" severity="secondary" title="Add message below" />
-            </div>
-            <div class="remove-message">
-                <Button icon="pi pi-minus" size="small" text @enter="$emit('remove-message')"
-                    @click="$emit('remove-message')" severity="secondary" title="Delete this message" />
+            <div class="actions">
+                <!-- <div role="button" aria-label="Gallery" tabindex="0"></div>-->
+                <div class="message-length"><span class="message-text-length">{{ message.text.length }}</span> / 280</div>
+                <div class="message-index"><span>#{{ index + 1 }}</span></div>
+                <div class="add-attachments">
+                    <!-- Max file size: ~1Mb because of BlueSky (Masto = 8Mb) --->
+                    <FileUpload mode="basic" name="attachments" url="/api/media" accept="image/*" :multiple="true"
+                        :maxFileSize="2000000" chooseLabel=" " :showCancelButton="false" :show-upload-button="false"
+                        :unstyled="false" :auto="true" @upload="onUploadComplete($event)" title="Add media">
+                    </FileUpload>
+                </div>
+                <div class="add-message-below">
+                    <Button icon="pi pi-plus" size="small" text @enter="$emit('add-message-below')"
+                        @click="$emit('add-message-below')" severity="secondary" title="Add message below" />
+                </div>
+                <div class="remove-message">
+                    <Button icon="pi pi-minus" size="small" text @enter="$emit('remove-message')"
+                        @click="$emit('remove-message')" severity="secondary" title="Delete this message" />
+                </div>
             </div>
         </div>
         <Dialog v-model:visible="visible" modal :header=editingMedia.filename :style="{ width: '50vw' }">
@@ -219,6 +225,29 @@ const inputChanged = debounce(250, () => {
 
 .message {
     margin-bottom: 10px;
+    display: grid;
+    width: 100%;
+    grid-template-columns: 52px 1fr;
+    gap: 10px;
+}
+
+.message-aside {
+    position: relative;
+    display: flex;
+    flex-flow: column;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+}
+
+.message-aside>.thread-line {
+    width: 2px;
+    margin-bottom: 4px;
+    background: #E5E7EB;
+    flex: 1 1 0%;
+}
+
+.message-main {
     display: flex;
     flex-direction: column;
 }
