@@ -183,6 +183,7 @@ const inputChanged = debounce(250, () => {
     justify-content: flex-end;
     padding: 0;
     color: #64748B;
+    margin-bottom: 10px;
 }
 
 .actions div {
@@ -229,7 +230,6 @@ const inputChanged = debounce(250, () => {
 }
 
 .message {
-    margin-bottom: 10px;
     display: grid;
     width: 100%;
     grid-template-columns: 52px 1fr;
