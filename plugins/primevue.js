@@ -1,5 +1,6 @@
 import { defineNuxtPlugin } from "#app";
 import PrimeVue from "primevue/config";
+import Avatar from "primevue/avatar";
 import Badge from "primevue/badge";
 import Button from "primevue/button";
 import Chip from "primevue/chip";
@@ -17,6 +18,7 @@ import ToastService from 'primevue/toastservice';
 export default defineNuxtPlugin((nuxtApp) => {
     nuxtApp.vueApp.use(PrimeVue, { ripple: true });
     nuxtApp.vueApp.use(ToastService)
+    nuxtApp.vueApp.component("Avatar", Avatar);
     nuxtApp.vueApp.component("Badge", Badge);
     nuxtApp.vueApp.component("Button", Button);
     nuxtApp.vueApp.component("Chip", Chip);
