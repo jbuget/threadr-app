@@ -197,6 +197,10 @@ async function deleteThread(): Promise<void> {
 function toggleThreadScheduleDialogVisible() {
   threadScheduleDialogVisible.value = !threadScheduleDialogVisible.value
 }
+
+function autoSave() {
+  console.log('Message changed')
+}
 </script>
 
 <template>
@@ -248,7 +252,7 @@ function toggleThreadScheduleDialogVisible() {
           <template v-for="(message, index) in thread.messages">
             <div class="message-wrapper">
               <MessageEditor :index="index" :message="message" @addMessageBelow="addMessageBelow(index + 1)"
-                @removeMessage="removeMessage(index)" />
+                @removeMessage="removeMessage(index)" @messageChanged="autoSave"/>
             </div>
           </template>
         </div>

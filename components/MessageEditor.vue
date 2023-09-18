@@ -2,6 +2,8 @@
 import { FileUploadUploadEvent } from "primevue/fileupload";
 import { useToast } from "primevue/usetoast";
 import { Attachment, Message } from "~/models/models";
+import { debounce } from 'throttle-debounce';
+import PQueue from 'p-queue';
 
 const config = useRuntimeConfig()
 
@@ -14,7 +16,7 @@ const props = defineProps<{
 
 const message: any = ref(props.message)
 
-defineEmits(['add-message-below', 'remove-message'])
+const emit = defineEmits(['add-message-below', 'remove-message', 'message-changed'])
 
 function onUploadComplete(event: FileUploadUploadEvent) {
     const { files } = JSON.parse(event.xhr.response)
@@ -70,6 +72,13 @@ function closeMediaEditionWithoutSave() {
     visible.value = false
 }
 
+const queue = new PQueue({ concurrency: 1 });
+
+const inputChanged = debounce(250, () => {
+    queue.clear();
+    queue.add(() => emit('message-changed'));
+})
+
 </script>
 
 <template>
@@ -78,7 +87,8 @@ function closeMediaEditionWithoutSave() {
             <span class="message-username">{{ config.public.displayingName }}</span>
         </div>
         <div class="message-text">
-            <Textarea v-model="message.text" placeholder="What's up?" rows="2" autoResize :unstyled="true"></Textarea>
+            <Textarea v-model="message.text" placeholder="What's up?" rows="2" autoResize :unstyled="true"
+                @input="inputChanged"></Textarea>
         </div>
         <div class="message-attachments" :style="messageAttachmentsStyle">
             <div class="attachment" v-for="(attachment, index) in message.attachments">
