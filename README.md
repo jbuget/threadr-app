@@ -57,6 +57,11 @@ All configuration option are set in the `.env` file.
 
 The name displayed on the header of each message in the Editor.
 
+
+**`AVATAR_URL`: URL**
+
+The URL to an avatar image (eg: the one of your avatar on X/Twitter).
+
 </details>
 
 <details>

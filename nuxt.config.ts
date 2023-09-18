@@ -24,6 +24,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       displayingName: process.env.DISPLAYING_NAME,
+      avatarUrl: process.env.AVATAR_URL,
     }
   },
 })
