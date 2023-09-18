@@ -98,7 +98,8 @@ const inputChanged = debounce(250, () => {
                 <span class="message-username">{{ config.public.displayingName }}</span>
             </div>
             <div class="message-text">
-                <Textarea v-model="message.text" placeholder="What's up?" rows="2" autoResize :unstyled="true" @input="inputChanged" />
+                <Textarea v-model="message.text" placeholder="What's up?" rows="2" autoResize :unstyled="true"
+                    @input="inputChanged" />
             </div>
             <div class="message-attachments" :style="messageAttachmentsStyle">
                 <div class="attachment" v-for="(attachment, index) in message.attachments">

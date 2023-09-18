@@ -109,21 +109,23 @@ function removeMessage(index: number): void {
   changeUpdateKey()
 }
 
-async function doSaveThread(thread: Thread): Promise<number> {
-  let url = '/api/threads'
-  if (thread.id) {
-    url += `/${thread.id}`
+async function doSaveThread(): Promise<void> {
+  if (thread.value) {
+    let url = '/api/threads'
+    if (thread.value.id) {
+      url += `/${thread.value.id}`
+    }
+    const response: any = await $fetch(url, { method: 'post', body: { messages: thread.value.messages } })
+    thread.value.id = response.id as number
+    emit('thread-saved')
+    changeUpdateKey()
   }
-  const response: any = await $fetch(url, { method: 'post', body: { messages: thread.messages } })
-  emit('thread-saved')
-  changeUpdateKey()
-  return response.id as number
 }
 
 async function saveThread(): Promise<void> {
   try {
     if (thread.value && thread.value.messages) {
-      thread.value.id = await doSaveThread(thread.value)
+      await doSaveThread()
       toast.add({ severity: 'success', summary: 'Thread saved', detail: `${thread.value.messages.length} posts saved`, life: 3000 });
     }
   } catch (err: any) {
@@ -134,7 +136,7 @@ async function saveThread(): Promise<void> {
 async function publishThread(): Promise<void> {
   try {
     if (thread.value && thread.value.messages) {
-      thread.value.id = await doSaveThread(thread.value)
+      await doSaveThread()
       const nonEmptyMessages = thread.value.messages.filter((message: any) => message.text.trim().length > 0 || message.attachments.length > 0)
       await $fetch(`/api/threads/${thread.value.id}/publication`, { method: 'post' })
       toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
@@ -147,10 +149,8 @@ async function publishThread(): Promise<void> {
 async function scheduleThread(): Promise<void> {
   try {
     if (thread.value && thread.value.messages) {
-      thread.value.id = await doSaveThread(thread.value)
-
+      await doSaveThread()
       await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt: thread.value.scheduledAt } })
-
       threadScheduleDialogVisible.value = false
       toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication scheduled`, life: 3000 });
     }
@@ -196,8 +196,9 @@ function toggleThreadScheduleDialogVisible() {
   threadScheduleDialogVisible.value = !threadScheduleDialogVisible.value
 }
 
-function autoSave() {
-  console.log('Message changed')
+async function autoSave() {
+  await doSaveThread()
+  console.log(`Thread saved at ${Date.now().toLocaleString}`)
 }
 </script>
 
@@ -227,7 +228,7 @@ function autoSave() {
         </div>
       </div>
 
-      <div class="thread-content"  :key="updateKey">
+      <div class="thread-content" :key="updateKey">
         <div class="thread-status">
           <div v-if="thread.publishedAt">
             <InlineMessage severity="success" icon="pi pi-send" :closable="false">{{ threadMessage }}</InlineMessage>
@@ -243,14 +244,14 @@ function autoSave() {
           <div v-else-if="thread.updatedAt">
             <InlineMessage severity="info" icon="pi pi-save" :closable="false">{{ threadMessage }}</InlineMessage>
           </div>
-          <div v-else class="empty-message"/>
+          <div v-else class="empty-message" />
         </div>
 
         <div class="messages">
           <template v-for="(message, index) in thread.messages">
             <div class="message-wrapper">
               <MessageEditor :index="index" :message="message" @addMessageBelow="addMessageBelow(index + 1)"
-                @removeMessage="removeMessage(index)" @messageChanged="autoSave"/>
+                @removeMessage="removeMessage(index)" @messageChanged="autoSave" />
             </div>
           </template>
         </div>
@@ -298,6 +299,7 @@ function autoSave() {
   margin: 74px auto 40px;
   padding: 10px 0;
 }
+
 .messages {
   display: flex;
   flex-direction: column;
@@ -306,6 +308,7 @@ function autoSave() {
 .message-wrapper:last-child {
   margin-bottom: 4rem;
 }
+
 .thread-actions {
   display: flex;
   align-items: center;
