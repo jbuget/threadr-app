@@ -272,7 +272,7 @@ function toggleThreadScheduleDialogVisible() {
 .editor {
   display: flex;
   flex-direction: column;
-  width: 500px;
+  width: 600px;
 }
 
 .editor-content {
@@ -288,7 +288,7 @@ function toggleThreadScheduleDialogVisible() {
   top: 0;
   background-color: white;
   z-index: 1;
-  width: 500px;
+  width: 600px;
 }
 
 .thread-title {
