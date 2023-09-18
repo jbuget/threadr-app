@@ -137,7 +137,6 @@ async function publishThread(): Promise<void> {
       thread.value.id = await doSaveThread(thread.value)
       const nonEmptyMessages = thread.value.messages.filter((message: any) => message.text.trim().length > 0 || message.attachments.length > 0)
       await $fetch(`/api/threads/${thread.value.id}/publication`, { method: 'post' })
-      changeUpdateKey()
       toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
     }
   } catch (err: any) {
@@ -153,7 +152,6 @@ async function scheduleThread(): Promise<void> {
       await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt: thread.value.scheduledAt } })
 
       threadScheduleDialogVisible.value = false
-      changeUpdateKey()
       toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication scheduled`, life: 3000 });
     }
   } catch (err: any) {
@@ -205,7 +203,7 @@ function toggleThreadScheduleDialogVisible() {
     <!-- you will need to handle a loading state -->
     <div class="editor-content" v-if="!pending && thread">
       <div class="thread-header">
-        <h2 class="thread-title">{{ thread.id }}</h2>
+        <h2 class="thread-title"></h2>
         <div class="thread-actions">
           <div class="save">
             <Button icon="pi pi-save" severity="info" size="small" @click="saveThread" rounded outlined
@@ -225,7 +223,7 @@ function toggleThreadScheduleDialogVisible() {
         </div>
       </div>
 
-      <div class="thread-content">
+      <div class="thread-content"  :key="updateKey">
         <div class="thread-status">
           <div v-if="thread.publishedAt">
             <InlineMessage severity="success" icon="pi pi-send" :closable="false">{{ threadMessage }}</InlineMessage>
@@ -244,7 +242,7 @@ function toggleThreadScheduleDialogVisible() {
           <div v-else class="empty-message"/>
         </div>
 
-        <div class="messages" :key="updateKey">
+        <div class="messages">
           <template v-for="(message, index) in thread.messages">
             <div class="message-wrapper">
               <MessageEditor :index="index" :message="message" @addMessageBelow="addMessageBelow(index + 1)"
@@ -261,9 +259,6 @@ function toggleThreadScheduleDialogVisible() {
           <Button label="Schedule" severity="warning" @click="scheduleThread" @enter="scheduleThread" />
         </div>
       </Dialog>
-    </div>
-    <div v-else>
-      Loading...
     </div>
   </div>
 </template>
@@ -284,7 +279,6 @@ function toggleThreadScheduleDialogVisible() {
   position: fixed;
   display: flex;
   flex-direction: row;
-  border-bottom: 1px solid lightgray;
   top: 0;
   background-color: white;
   z-index: 1;
@@ -305,6 +299,9 @@ function toggleThreadScheduleDialogVisible() {
   flex-direction: column;
 }
 
+.message-wrapper:last-child {
+  margin-bottom: 4rem;
+}
 .thread-actions {
   display: flex;
   align-items: center;

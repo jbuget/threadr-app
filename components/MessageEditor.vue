@@ -174,6 +174,7 @@ function closeMediaEditionWithoutSave() {
     justify-content: flex-end;
     padding: 0;
     color: #64748B;
+    margin-bottom: 10px;
 }
 
 .actions div {
@@ -220,7 +221,6 @@ function closeMediaEditionWithoutSave() {
 }
 
 .message {
-    margin-bottom: 10px;
     display: grid;
     width: 100%;
     grid-template-columns: 52px 1fr;
