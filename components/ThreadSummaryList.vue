@@ -37,7 +37,7 @@ const { data: threads } = await useFetch(
             published: []
         })
         return result
-    }
+    },
 })
 
 function badgeStyle(thread: ThreadSummary) {
@@ -113,6 +113,8 @@ function badgeStyle(thread: ThreadSummary) {
     align-items: center;
     font-size: 0.85rem;
     font-weight: 600;
+    border-top: 1px solid lightgray;
+    border-bottom: 1px solid lightgray;
 }
 
 .thread-list-title>.pi {
@@ -120,7 +122,6 @@ function badgeStyle(thread: ThreadSummary) {
 }
 
 .thread-list-items {
-    margin-bottom: 0.5rem;
 }
 
 .thread {
