@@ -4,7 +4,10 @@ import { FileUploadUploadEvent } from "primevue/fileupload";
 import { useToast } from "primevue/usetoast";
 import { Attachment, Message } from "~/models/models";
 import { debounce } from 'throttle-debounce';
+<<<<<<< Updated upstream
 import PQueue from 'p-queue';
+=======
+>>>>>>> Stashed changes
 
 const config = useRuntimeConfig()
 
@@ -73,12 +76,20 @@ function closeMediaEditionWithoutSave() {
     visible.value = false
 }
 
+<<<<<<< Updated upstream
 const queue = new PQueue({ concurrency: 1 });
 
 const inputChanged = debounce(250, () => {
     queue.clear();
     queue.add(() => emit('message-changed'));
 })
+=======
+function inputChanged() {
+    debounce(250, () => {
+        emit('message-changed')
+    })
+}
+>>>>>>> Stashed changes
 
 </script>
 
@@ -99,7 +110,11 @@ const inputChanged = debounce(250, () => {
             </div>
             <div class="message-text">
                 <Textarea v-model="message.text" placeholder="What's up?" rows="2" autoResize :unstyled="true"
+<<<<<<< Updated upstream
                     @input="inputChanged" />
+=======
+                    @input="inputChanged"></Textarea>
+>>>>>>> Stashed changes
             </div>
             <div class="message-attachments" :style="messageAttachmentsStyle">
                 <div class="attachment" v-for="(attachment, index) in message.attachments">

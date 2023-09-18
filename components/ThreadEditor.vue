@@ -196,9 +196,14 @@ function toggleThreadScheduleDialogVisible() {
   threadScheduleDialogVisible.value = !threadScheduleDialogVisible.value
 }
 
+<<<<<<< Updated upstream
 async function autoSave() {
   await doSaveThread()
   console.log(`Thread saved at ${Date.now().toLocaleString}`)
+=======
+function autoSave() {
+  console.log('Message changed')
+>>>>>>> Stashed changes
 }
 </script>
 
@@ -251,7 +256,11 @@ async function autoSave() {
           <template v-for="(message, index) in thread.messages">
             <div class="message-wrapper">
               <MessageEditor :index="index" :message="message" @addMessageBelow="addMessageBelow(index + 1)"
+<<<<<<< Updated upstream
                 @removeMessage="removeMessage(index)" @messageChanged="autoSave" />
+=======
+                @removeMessage="removeMessage(index)" @messageChanged="autoSave"/>
+>>>>>>> Stashed changes
             </div>
           </template>
         </div>
