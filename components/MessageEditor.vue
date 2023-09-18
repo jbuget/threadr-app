@@ -76,7 +76,12 @@ function closeMediaEditionWithoutSave() {
 <template>
     <div class="message">
         <div class="message-aside">
-            <Avatar label="P" class="mr-2" size="large" shape="circle" />
+            <template v-if=config.public.avatarUrl>
+                <Avatar :image="config.public.avatarUrl" class="mr-2" size="large" shape="circle" />
+            </template>
+            <template v-else>
+                <Avatar label="P" class="mr-2" size="large" shape="circle" />
+            </template>
             <div class="thread-line"></div>
         </div>
         <div class="message-main">
