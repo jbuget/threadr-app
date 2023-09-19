@@ -10,6 +10,8 @@ const toast = useToast();
 
 const updateKey = ref(generateUniqueKey('thread'))
 
+const threadScheduleDate: Ref<Date | undefined> = ref()
+
 const threadScheduleDialogVisible = ref(false)
 
 const props = defineProps<{
@@ -149,7 +151,9 @@ async function scheduleThread(): Promise<void> {
     if (thread.value && thread.value.messages) {
       thread.value.id = await doSaveThread(thread.value)
 
-      await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt: thread.value.scheduledAt } })
+      await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'post', body: { scheduledAt: threadScheduleDate.value } })
+
+      thread.value.scheduledAt = threadScheduleDate.value
 
       threadScheduleDialogVisible.value = false
       toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication scheduled`, life: 3000 });
@@ -195,6 +199,18 @@ async function deleteThread(): Promise<void> {
 function toggleThreadScheduleDialogVisible() {
   threadScheduleDialogVisible.value = !threadScheduleDialogVisible.value
 }
+
+function openThreadScheduleDialog() {
+  if (thread.value && thread.value.scheduledAt) {
+    threadScheduleDate.value = thread.value.scheduledAt
+  }
+  threadScheduleDialogVisible.value = true
+}
+
+function closeThreadScheduleDialog() {
+  threadScheduleDate.value = undefined
+  threadScheduleDialogVisible.value = false
+}
 </script>
 
 <template>
@@ -214,8 +230,8 @@ function toggleThreadScheduleDialogVisible() {
               :disabled="!isThreadEditable" />
           </div>
           <div class="schedule">
-            <Button icon="pi pi-calendar-times" severity="warning" size="small" @click="toggleThreadScheduleDialogVisible"
-              @enter="toggleThreadScheduleDialogVisible" rounded outlined :disabled="!isThreadEditable" />
+            <Button icon="pi pi-calendar-times" severity="warning" size="small" @click="openThreadScheduleDialog"
+              @enter="openThreadScheduleDialog" rounded outlined :disabled="!isThreadEditable" />
           </div>
           <div class="delete">
             <Button icon="pi pi-trash" severity="danger" size="small" @click="deleteThread" rounded outlined
@@ -252,7 +268,8 @@ function toggleThreadScheduleDialogVisible() {
 
       <Dialog class="p-fluid" v-model:visible="threadScheduleDialogVisible" modal
         header="Schedule the thread publication ">
-        <Calendar v-model="thread.scheduledAt" showTime hourFormat="24" showButtonBar inline></Calendar>
+        <Calendar v-model="threadScheduleDate" showTime hourFormat="24" showButtonBar inline
+          @hide="closeThreadScheduleDialog" />
         <div style="margin-top: 1rem;">
           <Button label="Schedule" severity="warning" @click="scheduleThread" @enter="scheduleThread" />
         </div>
@@ -322,4 +339,5 @@ function toggleThreadScheduleDialogVisible() {
   display: flex;
   justify-content: left;
   margin: 1rem 0;
-}</style>
+}
+</style>
