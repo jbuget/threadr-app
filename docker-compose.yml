@@ -19,6 +19,10 @@ services:
       - .env
     ports:
       - "5432:5432"
+    environment:
+      POSTGRES_USER: threadr
+      POSTGRES_PASSWORD: threadr
+      POSTGRES_DB: threadr
     volumes:
       - pgdata:/var/lib/postgresql/data
 
