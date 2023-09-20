@@ -117,7 +117,6 @@ async function doSaveThread(thread: Thread): Promise<number> {
     url += `/${thread.id}`
   }
   const response: any = await $fetch(url, { method: 'post', body: { messages: thread.messages } })
-  emit('thread-saved')
   changeUpdateKey()
   return response.id as number
 }
@@ -126,6 +125,7 @@ async function saveThread(): Promise<void> {
   try {
     if (thread.value && thread.value.messages) {
       thread.value.id = await doSaveThread(thread.value)
+      emit('thread-saved')
       toast.add({ severity: 'success', summary: 'Thread saved', detail: `${thread.value.messages.length} posts saved`, life: 3000 });
     }
   } catch (err: any) {
@@ -139,6 +139,7 @@ async function publishThread(): Promise<void> {
       thread.value.id = await doSaveThread(thread.value)
       const nonEmptyMessages = thread.value.messages.filter((message: any) => message.text.trim().length > 0 || message.attachments.length > 0)
       await $fetch(`/api/threads/${thread.value.id}/publication`, { method: 'post' })
+      emit('thread-saved')
       toast.add({ severity: 'success', summary: 'Thread published', detail: `${nonEmptyMessages.length} posts published`, life: 3000 });
     }
   } catch (err: any) {
@@ -156,6 +157,7 @@ async function scheduleThread(): Promise<void> {
       thread.value.scheduledAt = threadScheduleDate.value
 
       threadScheduleDialogVisible.value = false
+      emit('thread-saved')
       toast.add({ severity: 'success', summary: 'Thread scheduled', detail: `Publication scheduled`, life: 3000 });
     }
   } catch (err: any) {
@@ -169,6 +171,7 @@ async function cancelThreadSchedule(): Promise<void> {
       await $fetch(`/api/threads/${thread.value.id}/schedule`, { method: 'delete' })
       thread.value.scheduledAt = undefined
       changeUpdateKey()
+      emit('thread-saved')
       toast.add({ severity: 'success', summary: 'Thread schedule canceled', detail: `Publication canceled`, life: 3000 });
     }
   } catch (err: any) {
