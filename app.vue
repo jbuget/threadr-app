@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { generateUniqueKey } from './utils/utils';
+import Dialog from 'primevue/dialog';
 
 const threadId: any = ref(null)
 const threadSummaryListKey = ref(generateUniqueKey('thread-summary-list'))
@@ -15,6 +16,16 @@ async function refreshThreadList() {
 function newThread() {
   threadId.value = null
 }
+
+const userSettingsDialogVisible = ref(false)
+
+function openUserSettingsDialog() {
+  userSettingsDialogVisible.value = true
+}
+function closeUserSettingsDialog() {
+  userSettingsDialogVisible.value = false
+}
+
 </script>
 
 <template>
@@ -32,6 +43,10 @@ function newThread() {
         <nav class="thread-summary-list">
           <ThreadSummaryList @threadSelected="loadThread" :key="threadSummaryListKey" />
         </nav>
+        <div class="open-settings">
+          <Button icon="pi pi-plus" aria-label="Open user settings" label="Settings" outlined
+            @click="openUserSettingsDialog" @enter="openUserSettingsDialog" />
+        </div>
       </div>
 
       <div class="layout-content-wrapper">
@@ -41,6 +56,9 @@ function newThread() {
       </div>
     </div>
   </div>
+  <Dialog class="p-fluid" v-model:visible="userSettingsDialogVisible" modal header="User settings" @hide="closeUserSettingsDialog">
+    <UserSettings />
+  </Dialog>
 </template>
 
 <style scoped>
@@ -75,8 +93,13 @@ function newThread() {
 }
 
 .new-thread {
-  margin: 1rem;
+  padding: 1rem;
 }
+.open-settings {
+  padding: 1rem;
+  border-top: 1px solid lightgray;
+}
+
 
 .thread-summary-list {
   overflow-y: auto;
