@@ -56,8 +56,16 @@ function closeUserSettingsDialog() {
       </div>
     </div>
   </div>
-  <Dialog class="p-fluid" v-model:visible="userSettingsDialogVisible" modal header="User settings" @hide="closeUserSettingsDialog">
+  <Dialog class="p-fluid" v-model:visible="userSettingsDialogVisible" modal
+    @hide="closeUserSettingsDialog">
+    <template #header>
+      <h3>User settings</h3>
+    </template>
     <UserSettings />
+    <template #footer>
+      <Button label="Cancel" icon="pi pi-times" @click="closeUserSettingsDialog" text />
+      <Button label="Save" icon="pi pi-check" @click="closeUserSettingsDialog" />
+    </template>
   </Dialog>
 </template>
 
@@ -95,6 +103,7 @@ function closeUserSettingsDialog() {
 .new-thread {
   padding: 1rem;
 }
+
 .open-settings {
   padding: 1rem;
   border-top: 1px solid lightgray;
@@ -116,4 +125,5 @@ function closeUserSettingsDialog() {
 .layout-content-main {
   margin: 0 auto;
 }
+
 </style>

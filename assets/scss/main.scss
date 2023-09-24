@@ -15,3 +15,11 @@
 .p-datepicker .p-datepicker-buttonbar {
     padding: 0 !important;
 }
+
+.p-dialog .p-dialog-header {
+  border-bottom: 1px solid lightgray!important;
+}
+.p-dialog .p-dialog-footer {
+  border-top: 1px solid lightgray!important;
+  padding: 1.5rem!important;
+}
