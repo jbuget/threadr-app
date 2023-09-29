@@ -8,6 +8,13 @@
             "driver": "PostgreSQL",
             "name": "Localhost",
             "connectString": "postgresql://postgres-admin:postgres-password@localhost:5432/threadr?schema=public"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "PostgreSQL",
+            "name": "Test",
+            "connectString": "postgresql://threadr_test:threadr_test@localhost:5433/threadr_test?schema=public"
         }
     ]
 }

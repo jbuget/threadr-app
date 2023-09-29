@@ -19,12 +19,17 @@ services:
       - .env
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_USER: threadr
-      POSTGRES_PASSWORD: threadr
-      POSTGRES_DB: threadr
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  postgres_test:
+    image: postgres:15.4-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: threadr_test
+      POSTGRES_PASSWORD: threadr_test
+      POSTGRES_DB: threadr_test
 
   redis:
     image: redis:7.2-alpine
