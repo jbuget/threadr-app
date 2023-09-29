@@ -27,3 +27,23 @@ model Version {
   thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
   threadId  Int
 }
+
+model Settings {
+  id                    Int       @id @default(autoincrement())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime?
+  displayName           String?
+  avatarUrl             String?
+  blueskyEnabled        Boolean   @default(false)
+  blueskyUrl            String?
+  blueskyIdentifier     String?
+  blueskyPassword       String?
+  mastodonEnabled       Boolean   @default(false)
+  mastodonUrl           String?
+  mastodonAccessToken   String?
+  twitterEnabled        Boolean   @default(false)
+  twitterConsumerKey    String?
+  twitterConsumerSecret String?
+  twitterAccessToken    String?
+  twitterAccessSecret   String?
+}
