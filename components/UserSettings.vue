@@ -1,79 +1,84 @@
 <script setup lang="ts">
-const settings = ref({
-    display: [{
-        ref: 'display-name',
-        name: 'Name',
-        value: '',
-        placeholder: ''
-    }, {
-        ref: 'avatar-url',
-        name: 'Avatar URL',
-        value: '',
-        placeholder: ''
-    }],
-    platforms: [{
-        name: 'Bluesky',
-        enabled: false,
-        fields: [{
-            ref: 'bluesky-url',
-            name: 'URL',
-            value: 'https://bsky.social',
-            placeholder: ''
-        }, {
-            ref: 'bluesky-identifier',
-            name: 'Identifier',
-            value: '',
-            placeholder: 'Lorem ipsum'
-        }, {
-            ref: 'bluesky-password',
-            name: 'Password',
-            value: '',
-            placeholder: ''
-        }]
-    }, {
-        name: 'Mastodon',
-        enabled: false,
-        fields: [{
-            ref: 'mastodon-url',
-            name: 'URL',
-            value: 'https://piaille.fr',
-            placeholder: ''
-        }, {
-            ref: 'mastodon-access-token',
-            name: 'Access token',
-            value: '',
-            placeholder: ''
-        }]
-    }, {
-        name: 'Twitter',
-        enabled: false,
-        fields: [{
-            ref: 'twitter-consumer-key',
-            name: 'Consumer key',
-            value: '',
-            placeholder: ''
-        }, {
-            ref: 'twitter-consumer-secret',
-            name: 'Consumer secret',
-            value: '',
-            placeholder: ''
-        }, {
-            ref: 'twitter-access-token',
-            name: 'Access token',
-            value: '',
-            placeholder: ''
-        }, {
-            ref: 'twitter-access-secret',
-            name: 'Access secret',
-            value: '',
-            placeholder: ''
-        }]
-    }]
+const { data: settings, pending, error, refresh } = await useFetch(`/api/settings`, {
+    transform: (input: any) => {
+        const result: any = {
+            display: [{
+                ref: 'display-name',
+                name: 'Name',
+                value: input?.display_name,
+                placeholder: ''
+            }, {
+                ref: 'avatar-url',
+                name: 'Avatar URL',
+                value: input?.avatar_url,
+                placeholder: ''
+            }],
+            platforms: [{
+                name: 'Bluesky',
+                enabled: input.bluesky_enabled,
+                fields: [{
+                    ref: 'bluesky-url',
+                    name: 'URL',
+                    value: input?.bluesky_url,
+                    placeholder: ''
+                }, {
+                    ref: 'bluesky-identifier',
+                    name: 'Identifier',
+                    value: input?.bluesky_identifier,
+                    placeholder: 'Lorem ipsum'
+                }, {
+                    ref: 'bluesky-password',
+                    name: 'Password',
+                    value: input?.bluesky_password,
+                    placeholder: ''
+                }]
+            }, {
+                name: 'Mastodon',
+                enabled: input?.mastodon_enabled,
+                fields: [{
+                    ref: 'mastodon-url',
+                    name: 'URL',
+                    value: input?.mastodon_url,
+                    placeholder: ''
+                }, {
+                    ref: 'mastodon-access-token',
+                    name: 'Access token',
+                    value: input?.mastodon_access_token,
+                    placeholder: ''
+                }]
+            }, {
+                name: 'Twitter',
+                enabled: input?.twitter_enabled,
+                fields: [{
+                    ref: 'twitter-consumer-key',
+                    name: 'Consumer key',
+                    value: input?.twitter_consumer_key,
+                    placeholder: ''
+                }, {
+                    ref: 'twitter-consumer-secret',
+                    name: 'Consumer secret',
+                    value: input?.twitter_consumer_secret,
+                    placeholder: ''
+                }, {
+                    ref: 'twitter-access-token',
+                    name: 'Access token',
+                    value: input?.twitter_access_token,
+                    placeholder: ''
+                }, {
+                    ref: 'twitter-access-secret',
+                    name: 'Access secret',
+                    value: input?.twitter_access_secret,
+                    placeholder: ''
+                }]
+            }]
+        }
+        return result
+    }
 })
 </script>
 
 <template>
-    <div class="user-settings">
+    <div class="user-settings" v-if="!pending && settings">
         <div class="displaying">
             <h3>Display</h3>
             <div class="form-fields">
