@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest"
 import { setup, fetch } from '@nuxt/test-utils'
-import { clearData } from '../utils/test-utils'
 import { prisma } from '../prisma/db'
 
 async function insertIntoSettings(data: any): Promise<void> {
@@ -19,7 +18,7 @@ describe("GET /api/settings", async () => {
     describe('when there is no data in database', () => {
 
         beforeAll(async () => {
-            await clearData();
+            await prisma.settings.deleteMany()
         });
 
         it("should respond with status code 204", async () => {
@@ -60,7 +59,7 @@ describe("GET /api/settings", async () => {
         }
 
         beforeAll(async () => {
-            await clearData();
+            await prisma.settings.deleteMany()
             await insertIntoSettings(data)
         });
 
