@@ -1,3 +1,10 @@
+const modules = (() => {
+  if (process.env.NODE_ENV === 'test') {
+    return []
+  }
+  return ['@nuxtjs/google-fonts']
+})()
+
 // @ts-nocheck
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -13,7 +20,7 @@ export default defineNuxtConfig({
   build: {
     transpile: ["primevue"]
   },
-  modules: ['@nuxtjs/google-fonts'],
+  modules: modules,
   googleFonts: {
     families: {
       Lato: true,
@@ -27,4 +34,5 @@ export default defineNuxtConfig({
       avatarUrl: process.env.AVATAR_URL,
     }
   },
+  test: process.env.NODE_ENV === 'test',
 })
