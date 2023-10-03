@@ -15,10 +15,8 @@ async function insertIntoSettings(data: any): Promise<any> {
 
 describe("PATCH /api/settings", async () => {
 
-    await setup({
-        browser: false,
-    })
-    
+    await setup({ browser: false })
+
     describe('when there is data in database', () => {
 
         const beforeData = {

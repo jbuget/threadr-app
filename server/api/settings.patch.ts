@@ -1,22 +1,5 @@
 import { prisma } from '../../prisma/db'
 
-type UpdateSettingsRequest = {
-    display_name?: string
-    avatar_url?: string
-    bluesky_enabled?: boolean
-    bluesky_url?: string
-    bluesky_identifier?: string
-    bluesky_password?: string
-    mastodon_enabled?: boolean
-    mastodon_url?: string
-    mastodon_access_token?: string
-    twitter_enabled?: boolean
-    twitter_consumer_key?: string
-    twitter_consumer_secret?: string
-    twitter_access_token?: string
-    twitter_access_secret?: string
-}
-
 export default defineEventHandler(async (event: any) => {
     console.log(`PATCH /api/settings`)
     try {
