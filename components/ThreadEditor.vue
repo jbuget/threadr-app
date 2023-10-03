@@ -218,7 +218,6 @@ function closeThreadScheduleDialog() {
 
 <template>
   <div class="editor">
-    <Toast />
     <!-- you will need to handle a loading state -->
     <div class="editor-content" v-if="!pending && thread">
       <div class="thread-header">
