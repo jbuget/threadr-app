@@ -1,73 +1,95 @@
 <script setup lang="ts">
 const { data: settings, pending, error, refresh } = await useFetch(`/api/settings`, {
     transform: (input: any) => {
+        let settings: any
+
+        if (input) {
+            settings = input
+        } else {
+            settings = {}
+            settings.display_name = ''
+            settings.avatar_url = ''
+            settings.bluesky_enabled = false
+            settings.bluesky_url = ''
+            settings.bluesky_identifier = ''
+            settings.bluesky_password = ''
+            settings.mastodon_enabled = false
+            settings.mastodon_url = ''
+            settings.mastodon_access_token = ''
+            settings.twitter_enabled = false
+            settings.twitter_consumer_key = ''
+            settings.twitter_consumer_secret = ''
+            settings.twitter_access_token = ''
+            settings.twitter_access_secret = ''
+        }
+
         const result: any = {
             display: [{
                 ref: 'display-name',
                 name: 'Name',
-                value: input?.display_name,
+                value: settings.display_name,
                 placeholder: ''
             }, {
                 ref: 'avatar-url',
                 name: 'Avatar URL',
-                value: input?.avatar_url,
+                value: settings.avatar_url,
                 placeholder: ''
             }],
             platforms: [{
                 name: 'Bluesky',
-                enabled: input.bluesky_enabled,
+                enabled: settings.bluesky_enabled,
                 fields: [{
                     ref: 'bluesky-url',
                     name: 'URL',
-                    value: input?.bluesky_url,
+                    value: settings.bluesky_url,
                     placeholder: ''
                 }, {
                     ref: 'bluesky-identifier',
                     name: 'Identifier',
-                    value: input?.bluesky_identifier,
+                    value: settings.bluesky_identifier,
                     placeholder: 'Lorem ipsum'
                 }, {
                     ref: 'bluesky-password',
                     name: 'Password',
-                    value: input?.bluesky_password,
+                    value: settings.bluesky_password,
                     placeholder: ''
                 }]
             }, {
                 name: 'Mastodon',
-                enabled: input?.mastodon_enabled,
+                enabled: settings.mastodon_enabled,
                 fields: [{
                     ref: 'mastodon-url',
                     name: 'URL',
-                    value: input?.mastodon_url,
+                    value: settings.mastodon_url,
                     placeholder: ''
                 }, {
                     ref: 'mastodon-access-token',
                     name: 'Access token',
-                    value: input?.mastodon_access_token,
+                    value: settings.mastodon_access_token,
                     placeholder: ''
                 }]
             }, {
                 name: 'Twitter',
-                enabled: input?.twitter_enabled,
+                enabled: settings.twitter_enabled,
                 fields: [{
                     ref: 'twitter-consumer-key',
                     name: 'Consumer key',
-                    value: input?.twitter_consumer_key,
+                    value: settings.twitter_consumer_key,
                     placeholder: ''
                 }, {
                     ref: 'twitter-consumer-secret',
                     name: 'Consumer secret',
-                    value: input?.twitter_consumer_secret,
+                    value: settings.twitter_consumer_secret,
                     placeholder: ''
                 }, {
                     ref: 'twitter-access-token',
                     name: 'Access token',
-                    value: input?.twitter_access_token,
+                    value: settings.twitter_access_token,
                     placeholder: ''
                 }, {
                     ref: 'twitter-access-secret',
                     name: 'Access secret',
-                    value: input?.twitter_access_secret,
+                    value: settings.twitter_access_secret,
                     placeholder: ''
                 }]
             }]
