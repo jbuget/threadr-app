@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest"
 import { $fetch, setup } from '@nuxt/test-utils'
-import { clearData } from '../utils/test-utils'
 import { prisma } from '../prisma/db'
 
 async function insertIntoSettings(data: any): Promise<any> {
@@ -73,7 +72,7 @@ describe("PATCH /api/settings", async () => {
         }
 
         beforeEach(async () => {
-            await clearData();
+            await prisma.settings.deleteMany()
             existingSettings = await insertIntoSettings(beforeData)
         });
 
