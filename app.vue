@@ -1,6 +1,36 @@
 <script setup lang="ts">
-import { generateUniqueKey } from './utils/utils';
-import Dialog from 'primevue/dialog';
+import { generateUniqueKey } from './utils/utils'
+import { useToast } from 'primevue/usetoast'
+import Dialog from 'primevue/dialog'
+
+const toast = useToast();
+
+const { data: settings, pending, error, refresh } = await useFetch(`/api/settings`, {
+  transform: (input: any) => {
+    let settings: any
+
+    if (input) {
+      settings = input
+    } else {
+      settings = {}
+      settings.display_name = ''
+      settings.avatar_url = ''
+      settings.bluesky_enabled = false
+      settings.bluesky_url = ''
+      settings.bluesky_identifier = ''
+      settings.bluesky_password = ''
+      settings.mastodon_enabled = false
+      settings.mastodon_url = ''
+      settings.mastodon_access_token = ''
+      settings.twitter_enabled = false
+      settings.twitter_consumer_key = ''
+      settings.twitter_consumer_secret = ''
+      settings.twitter_access_token = ''
+      settings.twitter_access_secret = ''
+    }
+    return settings
+  }
+})
 
 const threadId: any = ref(null)
 const threadSummaryListKey = ref(generateUniqueKey('thread-summary-list'))
@@ -26,10 +56,38 @@ function closeUserSettingsDialog() {
   userSettingsDialogVisible.value = false
 }
 
+async function saveSettings() {
+  const body = Object.fromEntries(
+    [
+      'display_name',
+      'avatar_url',
+      'bluesky_enabled',
+      'bluesky_url',
+      'bluesky_identifier',
+      'bluesky_password',
+      'mastodon_enabled',
+      'mastodon_url',
+      'mastodon_access_token',
+      'twitter_enabled',
+      'twitter_consumer_key',
+      'twitter_consumer_secret',
+      'twitter_access_token',
+      'twitter_access_secret',
+    ]
+      .filter(key => key in settings.value)
+      .map(key => [key, settings.value[key]])
+  )
+
+  const response: any = await $fetch('/api/settings', { method: 'patch', body })
+  toast.add({ severity: 'success', summary: 'Settings saved', detail: `Settings saved`, life: 3000 });
+  closeUserSettingsDialog()
+}
+
 </script>
 
 <template>
   <div class="app">
+    <Toast />
     <div class="layout-container">
 
       <div class="layout-sidebar">
@@ -56,15 +114,14 @@ function closeUserSettingsDialog() {
       </div>
     </div>
   </div>
-  <Dialog class="p-fluid" v-model:visible="userSettingsDialogVisible" modal
-    @hide="closeUserSettingsDialog">
+  <Dialog class="p-fluid" v-model:visible="userSettingsDialogVisible" modal @hide="closeUserSettingsDialog">
     <template #header>
       <h3>User settings</h3>
     </template>
-    <UserSettings />
+    <UserSettings :settings="settings" />
     <template #footer>
       <Button label="Cancel" icon="pi pi-times" @click="closeUserSettingsDialog" text />
-      <Button label="Save" icon="pi pi-check" @click="closeUserSettingsDialog" />
+      <Button label="Save" icon="pi pi-check" @click="saveSettings" />
     </template>
   </Dialog>
 </template>
@@ -125,5 +182,4 @@ function closeUserSettingsDialog() {
 .layout-content-main {
   margin: 0 auto;
 }
-
 </style>
