@@ -6,7 +6,7 @@
     "dev": "nuxt dev",
     "test": "npm run test:prepare && npm run test:run",
     "test:prepare": "./scripts/test_prepare.sh",
-    "test:run": "NODE_ENV=test vitest ",
+    "test:run": "NODE_ENV=test vitest --run",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"

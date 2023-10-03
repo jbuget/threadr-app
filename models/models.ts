@@ -30,3 +30,22 @@ export interface ThreadSummary {
   nbMesssages: number
 }
 
+export interface Settings {
+  id?: number
+  createdAt?: Date
+  updatedAt?: Date
+  displayName?: string
+  avatarUrl?: string
+  blueskyEnabled: boolean
+  blueskyUrl?: string
+  blueskyIdentifier?: string
+  blueskyPassword?: string
+  mastodonEnabled: boolean
+  mastodonUrl?: string
+  mastodonAccessToken?: string
+  twitterEnabled: boolean
+  twitterConsumerKey?: string
+  twitterConsumerSecret?: string
+  twitterAccessToken?: string
+  twitterAccessSecret?: string
+}
