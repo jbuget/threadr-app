@@ -14,9 +14,7 @@ async function insertIntoSettings(data: any): Promise<void> {
 
 describe("GET /api/settings", async () => {
 
-    await setup({
-        browser: false,
-    })
+    await setup({ browser: false })
 
     describe('when there is no data in database', () => {
 

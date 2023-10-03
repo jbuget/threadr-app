@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import { setup, $fetch } from '@nuxt/test-utils'
+import { $fetch, setup } from '@nuxt/test-utils'
 import { clearData } from '../utils/test-utils'
 import { prisma } from '../prisma/db'
 
@@ -18,7 +18,7 @@ describe("PATCH /api/settings", async () => {
     await setup({
         browser: false,
     })
-
+    
     describe('when there is data in database', () => {
 
         const beforeData = {
