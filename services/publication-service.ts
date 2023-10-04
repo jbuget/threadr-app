@@ -9,91 +9,7 @@ import {
 } from "twitter-api-v2";
 import { prisma } from "~/prisma/db";
 import buildUrlFacets from "./bluesky-url-facets-extractor";
-
-function getEnvString(key: string): string {
-  return process.env[key] || "undefined";
-}
-
-// Social network API clients
-
-let blueskyClient: AtProtocole.BskyAgent;
-
-let mastodonClient: mastodon.rest.Client;
-
-let twitterClient: TwitterApi;
-
-async function connectClients(): Promise<void> {
-  if (!blueskyClient) {
-    console.log("Connect to Bluesky…");
-    blueskyClient = new AtProtocole.BskyAgent({
-      service: getEnvString("BLUESKY_URL"),
-    });
-    await blueskyClient.login({
-      identifier: getEnvString("BLUESKY_IDENTIFIER"),
-      password: getEnvString("BLUESKY_PASSWORD"),
-    });
-    console.log("Connection to Bluesky acquired.");
-  }
-
-  if (!mastodonClient) {
-    console.log("Connect to Mastodon…");
-    mastodonClient = createRestAPIClient({
-      url: getEnvString("MASTODON_URL"),
-      accessToken: getEnvString("MASTODON_ACCESS_TOKEN"),
-    });
-    console.log("Connection to Mastodon acquired.");
-  }
-  if (!twitterClient) {
-    console.log("Connect to Twitter…");
-    twitterClient = new TwitterApi({
-      appKey: getEnvString("TWITTER_CONSUMER_KEY"),
-      appSecret: getEnvString("TWITTER_CONSUMER_SECRET"),
-      accessToken: getEnvString("TWITTER_ACCESS_TOKEN"),
-      accessSecret: getEnvString("TWITTER_ACCESS_SECRET"),
-    });
-    console.log("Connection to Twitter acquired.");
-  }
-}
-
-// Publication on Mastodon
-
-async function postMessageOnMastodon(
-  message: Message,
-  inReplyToId: string | null
-): Promise<mastodon.v1.Status> {
-  const mediaIds: string[] = [];
-  if (message.attachments) {
-    for (const attachment of message.attachments) {
-      const remoteFile = await fetch(attachment.location);
-      const media = await mastodonClient.v2.media.create({
-        file: await remoteFile.blob(),
-        description: attachment.alt,
-      });
-      mediaIds.push(media.id);
-    }
-  }
-
-  return mastodonClient.v1.statuses.create({
-    status: message.text,
-    visibility: "public",
-    mediaIds,
-    inReplyToId,
-  });
-}
-
-async function postMessagesOnMastodon(messages: Message[]): Promise<void> {
-  let inReplyToId: string | null = null;
-
-  for (const message of messages) {
-    console.log("Publish message on Mastodon…");
-    const status: mastodon.v1.Status = await postMessageOnMastodon(
-      message,
-      inReplyToId
-    );
-    inReplyToId = status.id;
-    console.log("Message published on Mastodon.");
-  }
-}
+import { Settings } from "@prisma/client";
 
 // Publication on Bluesky
 
@@ -102,7 +18,22 @@ interface RecordRef {
   cid: string;
 }
 
+async function getBlueskyClient(settings: Settings): Promise<AtProtocole.BskyAgent> {
+  console.log("Connect to Bluesky…")
+  let blueskyClient: AtProtocole.BskyAgent
+  blueskyClient = new AtProtocole.BskyAgent({
+    service: settings.blueskyUrl,
+  })
+  await blueskyClient.login({
+    identifier: settings.blueskyIdentifier,
+    password: settings.blueskyPassword,
+  })
+  console.log("Connection to Bluesky acquired.")
+  return blueskyClient
+}
+
 async function postMessageOnBluesky(
+  blueskyClient: AtProtocole.BskyAgent,
   message: Message,
   reply: ReplyRef | null
 ): Promise<RecordRef> {
@@ -140,13 +71,13 @@ async function postMessageOnBluesky(
   }
 }
 
-async function postMessagesOnBluesky(messages: Message[]): Promise<void> {
+async function postMessagesOnBluesky(blueskyClient: AtProtocole.BskyAgent, messages: Message[]): Promise<void> {
   try {
     let reply: ReplyRef | null = null;
 
     for (const message of messages) {
       console.log("Publish message on Bluesky");
-      const recordRef: RecordRef = await postMessageOnBluesky(message, reply);
+      const recordRef: RecordRef = await postMessageOnBluesky(blueskyClient, message, reply);
       reply = {
         parent: {
           cid: recordRef.cid,
@@ -165,9 +96,76 @@ async function postMessagesOnBluesky(messages: Message[]): Promise<void> {
   }
 }
 
+// Publication on Mastodon
+
+async function getMastodonClient(settings: Settings): Promise<mastodon.rest.Client> {
+  console.log("Connect to Mastodon…")
+  let mastodonClient: mastodon.rest.Client
+  mastodonClient = createRestAPIClient({
+    url: settings.mastodonUrl || 'undefined_url',
+    accessToken: settings.mastodonAccessToken || 'undefined_access_token',
+  })
+  console.log("Connection to Mastodon acquired.")
+  return mastodonClient
+}
+
+async function postMessageOnMastodon(
+  mastodonClient: mastodon.rest.Client,
+  message: Message,
+  inReplyToId: string | null
+): Promise<mastodon.v1.Status> {
+  const mediaIds: string[] = [];
+  if (message.attachments) {
+    for (const attachment of message.attachments) {
+      const remoteFile = await fetch(attachment.location);
+      const media = await mastodonClient.v2.media.create({
+        file: await remoteFile.blob(),
+        description: attachment.alt,
+      });
+      mediaIds.push(media.id);
+    }
+  }
+
+  return mastodonClient.v1.statuses.create({
+    status: message.text,
+    visibility: "public",
+    mediaIds,
+    inReplyToId,
+  });
+}
+
+async function postMessagesOnMastodon(mastodonClient: mastodon.rest.Client, messages: Message[]): Promise<void> {
+  let inReplyToId: string | null = null;
+
+  for (const message of messages) {
+    console.log("Publish message on Mastodon…");
+    const status: mastodon.v1.Status = await postMessageOnMastodon(
+      mastodonClient,
+      message,
+      inReplyToId
+    );
+    inReplyToId = status.id;
+    console.log("Message published on Mastodon.");
+  }
+}
+
 // Publication on Twitter
 
+async function getTwitterClient(settings: Settings): Promise<TwitterApi> {
+  console.log("Connect to Twitter…")
+  let twitterClient: TwitterApi
+  twitterClient = new TwitterApi({
+    appKey: settings.twitterConsumerKey || 'twitter_consumer_key',
+    appSecret: settings.twitterConsumerSecret || 'twitter_consumer_secret',
+    accessToken: settings.twitterAccessToken || 'twitter_access_token',
+    accessSecret: settings.twitterAccessSecret || 'twitter_access_secret',
+  });
+  console.log("Connection to Twitter acquired.")
+  return twitterClient
+}
+
 async function postMessageOnTwitter(
+  twitterClient: TwitterApi,
   message: Message,
   reply: TweetV2PostTweetResult | null
 ): Promise<TweetV2PostTweetResult> {
@@ -199,12 +197,12 @@ async function postMessageOnTwitter(
   }
 }
 
-async function postMessagesOnTwitter(messages: Message[]): Promise<void> {
+async function postMessagesOnTwitter(twitterClient: TwitterApi, messages: Message[]): Promise<void> {
   let reply: TweetV2PostTweetResult | null = null;
 
   for (const message of messages) {
     console.log("Publish message on Twitter");
-    reply = await postMessageOnTwitter(message, reply);
+    reply = await postMessageOnTwitter(twitterClient, message, reply);
     console.log("Message published on twitter.");
   }
 }
@@ -212,25 +210,33 @@ async function postMessagesOnTwitter(messages: Message[]): Promise<void> {
 async function postMessages(messages: Message[]): Promise<string[]> {
   const platforms: string[] = [];
 
-  if ((process.env.BLUESKY_ENABLED as string) === "true") {
-    console.log("Publish messages on Bluesky");
-    await postMessagesOnBluesky(messages);
-    platforms.push("Bluesky");
-    console.log("Messages published on Bluesky.");
-  }
+  const settings = await prisma.settings.findFirst()
 
-  if ((process.env.MASTODON_ENABLED as string) === "true") {
-    console.log("Publish messages on Mastodon…");
-    await postMessagesOnMastodon(messages);
-    platforms.push("Mastodon");
-    console.log("Messages published on Mastodon.");
-  }
+  if (settings) {
+    if (settings.blueskyEnabled) {
+      const blueskyClient = await getBlueskyClient(settings)
+      console.log("Publish messages on Bluesky");
+      await postMessagesOnBluesky(blueskyClient, messages);
+      platforms.push("Bluesky");
+      console.log("Messages published on Bluesky.");
+    }
 
-  if ((process.env.TWITTER_ENABLED as string) === "true") {
-    console.log("Publish messages on Twitter…");
-    await postMessagesOnTwitter(messages);
-    platforms.push("Twitter");
-    console.log("Messages published on Twitter.");
+    if (settings.mastodonEnabled) {
+      const mastodonClient = await getMastodonClient(settings)
+      console.log("Publish messages on Mastodon…");
+      await postMessagesOnMastodon(mastodonClient, messages);
+      platforms.push("Mastodon");
+      console.log("Messages published on Mastodon.");
+    }
+
+    if (settings.twitterEnabled) {
+      const twitterClient = await getTwitterClient(settings)
+      console.log("Publish messages on Twitter…");
+      await postMessagesOnTwitter(twitterClient, messages);
+      platforms.push("Twitter");
+      console.log("Messages published on Twitter.");
+    }
+
   }
   return platforms;
 }
@@ -255,7 +261,6 @@ export async function publish(threadId: number): Promise<Thread> {
   const latestVersionData: any = latestVersion.data;
 
   console.log("Publish thread…");
-  await connectClients();
   const platforms: string[] = await postMessages(latestVersionData.messages);
 
   await prisma.thread.update({
