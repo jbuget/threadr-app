@@ -9,6 +9,7 @@ const config = useRuntimeConfig()
 const toast = useToast();
 
 const props = defineProps<{
+    settings: any,
     index: number,
     message: any
 }>()
@@ -76,8 +77,8 @@ function closeMediaEditionWithoutSave() {
 <template>
     <div class="message">
         <div class="message-aside">
-            <template v-if=config.public.avatarUrl>
-                <Avatar :image="config.public.avatarUrl" class="mr-2" size="large" shape="circle" />
+            <template v-if=settings.avatar_url>
+                <Avatar :image="settings.avatar_url" class="mr-2" size="large" shape="circle" />
             </template>
             <template v-else>
                 <Avatar label="P" class="mr-2" size="large" shape="circle" />
@@ -86,7 +87,7 @@ function closeMediaEditionWithoutSave() {
         </div>
         <div class="message-main">
             <div class="message-meta">
-                <span class="message-username">{{ config.public.displayingName }}</span>
+                <span class="message-username">{{ settings.display_name }}</span>
             </div>
             <div class="message-text">
                 <Textarea v-model="message.text" placeholder="What's up?" rows="2" autoResize :unstyled="true"></Textarea>
