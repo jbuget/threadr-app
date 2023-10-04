@@ -15,6 +15,7 @@ const threadScheduleDate: Ref<Date | undefined> = ref()
 const threadScheduleDialogVisible = ref(false)
 
 const props = defineProps<{
+  settings: any,
   threadId: number | null
 }>()
 
@@ -261,8 +262,8 @@ function closeThreadScheduleDialog() {
         <div class="messages">
           <template v-for="(message, index) in thread.messages">
             <div class="message-wrapper">
-              <MessageEditor :index="index" :message="message" @addMessageBelow="addMessageBelow(index + 1)"
-                @removeMessage="removeMessage(index)" />
+              <MessageEditor :settings="settings" :index="index" :message="message"
+                @addMessageBelow="addMessageBelow(index + 1)" @removeMessage="removeMessage(index)" />
             </div>
           </template>
         </div>
