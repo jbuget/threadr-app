@@ -85,7 +85,7 @@ const props = defineProps<{
                     <div class="form-field">
                         <label class="field-name" for="twitter_consumer_secret">Consumer secret</label>
                         <InputText class="field-value" id="twitter_consumer_secret" type="text"
-                            v-model="settings.twitter_consumer_secret" :disabled="settings.twitter_consumer_secret !== true"
+                            v-model="settings.twitter_consumer_secret" :disabled="settings.twitter_enabled !== true"
                             placeholder="" />
                     </div>
                     <div class="form-field">

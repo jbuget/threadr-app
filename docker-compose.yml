@@ -26,10 +26,6 @@ services:
     image: postgres:15.4-alpine
     ports:
       - "5433:5432"
-    environment:
-      POSTGRES_USER: threadr_test
-      POSTGRES_PASSWORD: threadr_test
-      POSTGRES_DB: threadr_test
 
   redis:
     image: redis:7.2-alpine
