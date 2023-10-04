@@ -2,8 +2,9 @@
   "name": "threader",
   "private": true,
   "scripts": {
+    "db:migrate": "npx prisma migrate deploy",
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "npm run db:migrate && nuxt dev",
     "test": "npm run test:prepare && npm run test:run",
     "test:prepare": "./scripts/test_prepare.sh",
     "test:run": "NODE_ENV=test vitest --run --no-threads",
