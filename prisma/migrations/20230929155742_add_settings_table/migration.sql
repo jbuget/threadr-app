@@ -20,3 +20,7 @@ CREATE TABLE "Settings" (
 
     CONSTRAINT "Settings_pkey" PRIMARY KEY ("id")
 );
+
+INSERT INTO "Settings" (id)
+SELECT 1
+WHERE NOT EXISTS (SELECT 1 FROM "Settings");

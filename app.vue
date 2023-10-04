@@ -109,7 +109,7 @@ async function saveSettings() {
 
       <div class="layout-content-wrapper">
         <div class="layout-content-main">
-          <ThreadEditor v-if="settings" :settings="settings" :threadId="threadId" @threadSaved="refreshThreadList" @threadDeleted="refreshThreadList" />
+          <ThreadEditor :settings="settings" :threadId="threadId" @threadSaved="refreshThreadList" @threadDeleted="refreshThreadList" />
         </div>
       </div>
     </div>
