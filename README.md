@@ -2,9 +2,11 @@
 
 Threadr is a small (#workinprogress) web application that helps users of micro-blogging platforms to write great threads and allows them to crosspost in one click their content to Bluesky, Mastodon and Twitter/X.
 
+![Threadr-v0.5.0](./docs/threadr-v0.5.0.png)
+
 ## Core features
 
-* Write thread
+* Write threads
   * Add, edit, remove messages
   * Add, describe, remove message images (up to 4 by message)
 * Save a thread
