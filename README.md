@@ -2,6 +2,22 @@
 
 Threadr is a small (#workinprogress) web application that helps users of micro-blogging platforms to write great threads and allows them to crosspost in one click their content to Bluesky, Mastodon and Twitter/X.
 
+## Core features
+
+* Write thread
+  * Add, edit, remove messages
+  * Add, describe, remove message images (up to 4 by message)
+* Save a thread
+* List all threads (by status, e.g. `draft`, `scheduled`, `published`)
+* Publish a thread
+* Schedule (and cancel) a thread publication
+* Configure platforms in a settings manager
+  * display name
+  * avatar
+  * Bluesky activation and configuration
+  * Mastodon activation and configuration
+  * Twitter activation and configuration
+
 ## Installation
 
 For now, Threadr only works in localhost.
@@ -24,13 +40,23 @@ $ docker compose up -d
 
 **4/** Configure your MinIO instance
 
-MinIO console is accessible on [localhost:9001](http://localhost:9001) (credentials in `.env`file, cf. `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`)
+MinIO console is accessible on [localhost:9001](http://localhost:9001). Credentials are defined in `.env`file, cf. `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`. By default, values are "minio-admin" / "my-secured-password".
+
+![MinIO login screen](./docs/minio_login.png)
 
 Create a bucket (ex: "threadr-app" in `.env.sample`).
 
-In the settings, configure MinIO region (ex: "eu-fr-1" in `.env.sample`).
+![Create a MinIO bucket](./docs/minio_create_bucket.png)
+
+In the MinIO settings, configure MinIO region (ex: "eu-fr-1" in `.env.sample`).
+
+![Region Configuration in MinIO](./docs/minio_configure_region.png)
 
 > ⚠️ It is recommanded to declare a custom policy with dedicacted path in `readonly` acces for anonymous visitors
+
+![Add anonymous access rule](./docs/minio_configure_anonymous_access_rule.png)
+
+![Anonymous access rule result](./docs/minio_bucket_access_policy.png)
 
 **5/** Run Threadr locally
 
@@ -45,93 +71,21 @@ $ npm run dev -- -o
     <img src="/threadr.png" width="480">
 </p>
 
+**7/** (bonus) You can follow your scheduled threads in BullMQ console
+
+Run the following command : 
+
+```shell
+$ npx bullmq-dashboard-runnable thread-schedules -P 3001
+```
+
+Then access [localhost:3001](http://localhost:3001).
+
+![BullMQ console](./docs/bullmq_console.png)
+
 ## Configuration
 
 All configuration option are set in the `.env` file.
-
-<details>
-
-<summary>Editing threads, messages and media</summary>
-
-**`DISPLAYING_NAME`: string**
-
-The name displayed on the header of each message in the Editor.
-
-
-**`AVATAR_URL`: URL**
-
-The URL to an avatar image (eg: the one of your avatar on X/Twitter).
-
-</details>
-
-<details>
-
-<summary>Publishing on Bluesky</summary>
-
-**`BLUESKY_ENABLED`: boolean**
-
-Activate or deactivate posting on Bluesky platform.
-
-**`BLUESKY_URL`: URL**
-
-Bluesky is based on the [Authenticated Transfer Protocol](https://atproto.com/guides/overview). 
-Today, Bluesky API endpoint URL is `https://bsky.social` but maybe one day it will be a different one.
-
-**`BLUESKY_IDENTIFIER`: string**
-
-The username of the Bluesky publisher account.
-
-**`BLUESKY_PASSWORD`: string**
-
-The password of the Bluesky publisher account.
-
-</details>
-
-<details>
-
-<summary>Publishing on Mastodon</summary>
-
-**`MASTODON_ENABLED`: boolean**
-
-Activate or deactivate posting on Mastodon platform.
-
-**`MASTODON_URL`: URL**
-
-The Mastodon instance URL.Check that the instance allows API.
-
-**`MASTODON_ACCESS_TOKEN`: string**
-
-The token of the Mastodon publisher app.
-
-</details>
-
-<details>
-
-<summary>Publishing on Twitter</summary>
-
-**`TWITTER_ENABLED`: boolean**
-
-Activate or deactivate posting on Twitter platform.
-
-> cf. [the official Twitter documentation](https://developer.twitter.com/en/docs/authentication/oauth-1-0a/api-key-and-secret) about how to generate tokens.
-
-**`TWITTER_CONSUMER_KEY`: string**
-
-The Twitter app Consumer Key.
-
-**`TWITTER_CONSUMER_SECRET`: string**
-
-The Twitter app Consumer Secret.
-
-**`TWITTER_ACCESS_TOKEN`: string**
-
-Twitter app’s authentication access token.
-
-> cf. [OAuth 2.0 Authorization Code](https://developer.twitter.com/en/docs/authentication/oauth-2-0/authorization-code)
-**`TWITTER_ACCESS_SECRET`: string**
-
-Twitter app’s authentication access secret.
-</details>
 
 <details>
 
@@ -189,5 +143,15 @@ The PostgreSQL administration account password (used for docker-compose postgres
 **`POSTGRES_DB`: string**
 
 The PostgreSQL database.
+
+</details>
+
+<details>
+
+<summary>Scheduling thread publication</summary>
+
+**`REDIS_URL`: (Redis) URL**
+
+The Redis database URL, used by BullMQ.
 
 </details>
