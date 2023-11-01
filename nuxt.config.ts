@@ -1,3 +1,5 @@
+import { resolve } from "node:path"
+
 const modules = (() => {
   if (process.env.NODE_ENV === 'test') {
     return []
@@ -20,7 +22,7 @@ export default defineNuxtConfig({
   build: {
     transpile: ["primevue"]
   },
-  modules: modules,
+  modules: ['@hebilicious/authjs-nuxt', ...modules],
   googleFonts: {
     families: {
       Lato: true,
@@ -29,10 +31,24 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
+    authJs: {
+      secret: process.env.NUXT_NEXTAUTH_SECRET // You can generate one with `openssl rand -base64 32`
+    },
+    github: {
+      clientId: process.env.NUXT_GITHUB_CLIENT_ID,
+      clientSecret: process.env.NUXT_GITHUB_CLIENT_SECRET
+    },
     public: {
       displayingName: process.env.DISPLAYING_NAME,
       avatarUrl: process.env.AVATAR_URL,
+      authJs: {
+        baseUrl: process.env.NUXT_NEXTAUTH_URL, // The URL of your deployed app (used for origin Check in production)
+        verifyClientOnEveryRequest: true // whether to hit the /auth/session endpoint on every client request
+      }
     }
   },
   test: process.env.NODE_ENV === 'test',
+  alias: {
+    cookie: resolve(__dirname, "node_modules/cookie")
+  }
 })

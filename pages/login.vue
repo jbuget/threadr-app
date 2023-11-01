@@ -3,11 +3,23 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 
+const { signIn, signOut, session, status, cookies, getProviders } = useAuth()
+
 const username = ref(null)
 const password = ref(null)
 </script>
 
 <template>
+    <div>
+        <a href="/api/auth/signin" class="buttonPrimary">Native Link Sign in</a>
+        <button @click="signIn(`github`)">
+            JS Sign In
+        </button>
+        <button @click="signOut()">
+            Sign Out
+        </button>
+    </div>
+
     <form class="login-form">
         <div class="fields">
             <div class="field field--username">
