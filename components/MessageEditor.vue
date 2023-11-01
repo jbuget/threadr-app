@@ -143,7 +143,7 @@ function closeMediaEditionWithoutSave() {
     </div>
 </template>
 
-<style>
+<style scoped>
 .publish {
     display: flex;
     flex-direction: row;
