@@ -3,7 +3,7 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 
-const fullname = ref(null)
+const name = ref(null)
 const username = ref(null)
 const password = ref(null)
 </script>
@@ -11,9 +11,9 @@ const password = ref(null)
 <template>
     <form class="signup-form">
         <div class="fields">
-            <div class="field field--fullname">
-                <label for="fullname">Full name</label>
-                <InputText type="text" name="fullname" v-model="fullname" />
+            <div class="field field--name">
+                <label for="name">Full name</label>
+                <InputText type="text" name="name" v-model="name" />
             </div>
             <div class="field field--username">
                 <label for="username">Username</label>

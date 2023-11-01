@@ -131,3 +131,6 @@ dist
 
 # Nuxt
 .output
+
+# SQL
+*backup.sql
