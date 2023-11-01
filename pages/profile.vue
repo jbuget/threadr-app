@@ -1,11 +1,15 @@
 <script setup lang="ts">
 definePageMeta({ middleware: "auth", auth: { guestRedirectTo: "/login" } })
 
-const { session, status, cookies } = useAuth()
+const { signOut, session, status, cookies } = useAuth()
+
 </script>
 
 <template>
     <div class="page page--profile">
+        <button @click="signOut()">
+            Sign Out
+        </button>
         <div>
             <h2>Status</h2>
             <span>{{ status }}</span>
