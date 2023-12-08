@@ -1,4 +1,5 @@
 import GithubProvider from "@auth/core/providers/github"
+import EmailProvider from "@auth/core/providers/email"
 import type { AuthConfig } from "@auth/core/types"
 import { NuxtAuthHandler } from "#auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
@@ -19,7 +20,18 @@ export const authOptions: AuthConfig = {
     GithubProvider({
       clientId: runtimeConfig.github.clientId,
       clientSecret: runtimeConfig.github.clientSecret
-    })
+    }),
+    EmailProvider({
+      server: {
+        host: process.env.EMAIL_SERVER_HOST,
+        port: process.env.EMAIL_SERVER_PORT,
+        auth: {
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD
+        }
+      },
+      from: process.env.EMAIL_FROM
+    }),
   ]
 }
 
