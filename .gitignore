@@ -134,3 +134,6 @@ dist
 
 # SQL
 *backup.sql
+
+# Docker
+docker-data/

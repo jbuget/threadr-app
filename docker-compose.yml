@@ -3,6 +3,7 @@ version: "3"
 services:
   minio:
     image: minio/minio
+    restart: unless-stopped
     command: 'server --console-address ":9001" /data'
     env_file:
       - .env
@@ -14,6 +15,7 @@ services:
 
   postgres:
     image: postgres:15.4-alpine
+    restart: unless-stopped
     env_file:
       - .env
     ports:
@@ -23,11 +25,13 @@ services:
 
   postgres_test:
     image: postgres:15.4-alpine
+    restart: unless-stopped
     ports:
       - "5433:5432"
 
   redis:
     image: redis:7.2-alpine
+    restart: unless-stopped
     ports:
       - "6379:6379"
     command: redis-server --save 60 1 --loglevel warning
@@ -36,34 +40,30 @@ services:
 
   mailserver:
     image: ghcr.io/docker-mailserver/docker-mailserver:latest
+    restart: unless-stopped
     # Provide the FQDN of your mail server here (Your DNS MX record should point to this value)
     #hostname: mail.example.com
-    hostname: localhost
+    hostname: mail-server
     env_file: .env
     # More information about the mail-server ports:
     # https://docker-mailserver.github.io/docker-mailserver/latest/config/security/understanding-the-ports/
     # To avoid conflicts with yaml base-60 float, DO NOT remove the quotation marks.
     ports:
       - "25:25" # SMTP  (explicit TLS => STARTTLS, Authentication is DISABLED => use port 465/587 instead)
-      - "143:143" # IMAP4 (explicit TLS => STARTTLS)
-      - "465:465" # ESMTP (implicit TLS)
-      - "587:587" # ESMTP (explicit TLS => STARTTLS)
-      - "993:993" # IMAP4 (implicit TLS)
+      #- "143:143" # IMAP4 (explicit TLS => STARTTLS)
+      #- "465:465" # ESMTP (implicit TLS)
+      #- "587:587" # ESMTP (explicit TLS => STARTTLS)
+      #- "993:993" # IMAP4 (implicit TLS)
     volumes:
       - ./docker-data/dms/mail-data/:/var/mail/
       - ./docker-data/dms/mail-state/:/var/mail-state/
       - ./docker-data/dms/mail-logs/:/var/log/mail/
       - ./docker-data/dms/config/:/tmp/docker-mailserver/
       - /etc/localtime:/etc/localtime:ro
-    restart: always
-    stop_grace_period: 1m
+    #stop_grace_period: 1m
     # Uncomment if using `ENABLE_FAIL2BAN=1`:
     # cap_add:
     #   - NET_ADMIN
-    healthcheck:
-      test: "ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1"
-      timeout: 3s
-      retries: 0
 volumes:
   pgdata:
   redis:

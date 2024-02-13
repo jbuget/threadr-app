@@ -15,6 +15,7 @@ const runtimeConfig = useRuntimeConfig()
 // Refer to Auth.js docs for more details
 export const authOptions: AuthConfig = {
   adapter: PrismaAdapter(prisma),
+  basePath: '/api/auth',
   secret: runtimeConfig.authJs.secret,
   providers: [
     GithubProvider({
@@ -25,10 +26,10 @@ export const authOptions: AuthConfig = {
       server: {
         host: process.env.EMAIL_SERVER_HOST,
         port: process.env.EMAIL_SERVER_PORT,
-        auth: {
+        /*auth: {
           user: process.env.EMAIL_SERVER_USER,
           pass: process.env.EMAIL_SERVER_PASSWORD
-        }
+        }*/
       },
       from: process.env.EMAIL_FROM
     }),
