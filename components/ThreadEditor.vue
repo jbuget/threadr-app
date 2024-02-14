@@ -2,7 +2,7 @@
 import Calendar from 'primevue/calendar';
 import Dialog from 'primevue/dialog';
 import { useToast } from 'primevue/usetoast'
-import { Thread } from '~/models/models'
+import type { Thread } from '~/models/models';
 import { generateUniqueKey } from '~/utils/utils'
 const toast = useToast();
 

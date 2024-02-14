@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Badge from 'primevue/badge';
-import { ThreadSummary } from '~/models/models';
+import type { ThreadSummary } from '~/models/models';
 
 const emit = defineEmits<{
     threadSelected: [id: number]

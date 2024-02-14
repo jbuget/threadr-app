@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Avatar from 'primevue/avatar'
-import { FileUploadUploadEvent } from "primevue/fileupload";
+import type { FileUploadUploadEvent } from "primevue/fileupload";
 import { useToast } from "primevue/usetoast";
-import { Attachment, Message } from "~/models/models";
+import type { Attachment, Message } from "~/models/models";
 
 const config = useRuntimeConfig()
 
