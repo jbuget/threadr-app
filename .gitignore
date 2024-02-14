@@ -137,3 +137,6 @@ dist
 
 # Docker
 docker-data/
+
+*.tmp
+.history

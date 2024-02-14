@@ -14,7 +14,7 @@ services:
       - minio_storage:/data
 
   postgres:
-    image: postgres:15.4-alpine
+    image: postgres:16.2-alpine
     restart: unless-stopped
     env_file:
       - .env
@@ -23,12 +23,12 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  postgres_test:
-    image: postgres:15.4-alpine
-    restart: unless-stopped
-    ports:
-      - "5433:5432"
-
+#  postgres_test:
+#    image: postgres:15.4-alpine
+#    restart: unless-stopped
+#    ports:
+#      - "5433:5432"
+#
   redis:
     image: redis:7.2-alpine
     restart: unless-stopped

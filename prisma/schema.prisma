@@ -19,6 +19,9 @@ model Thread {
   publishedAt DateTime?
   published   Boolean   @default(false)
   versions    Version[]
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 }
 
 model Version {
@@ -47,6 +50,9 @@ model Settings {
   twitterConsumerSecret String?
   twitterAccessToken    String?
   twitterAccessSecret   String?
+
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @unique
 }
 
 model Account {
@@ -84,6 +90,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  threads       Thread[]
+  settings      Settings?
 }
 
 model VerificationToken {
