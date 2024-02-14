@@ -4,6 +4,8 @@ import Avatar from "primevue/avatar";
 import Badge from "primevue/badge";
 import Button from "primevue/button";
 import Chip from "primevue/chip";
+import Column from "primevue/column";
+import DataTable from "primevue/datatable";
 import Dialog from 'primevue/dialog';
 import Divider from "primevue/divider";
 import FileUpload from "primevue/fileupload";
@@ -23,6 +25,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     nuxtApp.vueApp.component("Badge", Badge);
     nuxtApp.vueApp.component("Button", Button);
     nuxtApp.vueApp.component("Chip", Chip);
+    nuxtApp.vueApp.component("Column", Column);
+    nuxtApp.vueApp.component("DataTable", DataTable);
     nuxtApp.vueApp.component("Dialog", Dialog);
     nuxtApp.vueApp.component("Divider", Divider);
     nuxtApp.vueApp.component("FileUpload", FileUpload);
